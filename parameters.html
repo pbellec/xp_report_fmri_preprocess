@@ -5,10 +5,10 @@
 <head>
   <title>Report on the quality of MRI registration</title>
   <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
-  <link rel="stylesheet" type="text/css" href="bootstrap.min.css" />
-  <link rel="stylesheet" type="text/css" href="keen-dashboards.css" />
+  <link rel="stylesheet" type="text/css" href="assets/bootstrap/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="assets/keen/keen-dashboards.css" />
   <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Quicksand" />
-  <link rel="stylesheet" type="text/css" href="pretty-json.css" />
+  <link rel="stylesheet" type="text/css" href="assets/pretty-json/pretty-json.css" />
 </head>
 <body class="application">
 
@@ -118,23 +118,18 @@
 
   </div>
 
-  <script type="text/javascript" src="jquery.min.js"></script>
-  <script type="text/javascript" src="bootstrap.min.js"></script>
-
-  <script type="text/javascript" src="holder.js"></script>
-  <script>
-    Holder.add_theme("white", { background:"#fff", foreground:"#a7a7a7", size:10 });
-  </script>
+  /* Dependencies */
+  <script type="text/javascript" src="assets/jquery/jquery.min.js"></script>       /* from keen.io */
+  <script type="text/javascript" src="assets/bootstrap/bootstrap.min.js"></script> /* from keen.io */
+  <script type="text/javascript" src="assets/keen/keen.min.js"></script>           /* from keen.io */
+  <script type="text/javascript" src="assets/keen/meta.js"></script>               /* from keen.io */
+  <script type="text/javascript" src="assets/underscore/underscore-min.js"></script>   /* from pretty-json */
+  <script type="text/javascript" src="assets/backbone/backbone-min.js"></script>       /* from pretty-json */
+  <script type="text/javascript" src="assets/pretty-json/pretty-json-min.js"></script> /* from pretty-json */
   
-  <script type="text/javascript" src="keen.min.js"></script>
-  <script type="text/javascript" src="meta.js"></script>
-  <script src="jquery.event.move.js" type="text/javascript"></script>
-  <script src="jquery.twentytwenty.js" type="text/javascript"></script>
-  <script src="underscore-min.js"></script>
-  <script src="backbone-min.js"></script>
-  <script src="pretty-json-min.js"></script>
+  /* Custom script with the input files and parameters of the data coded in JSON */
   <script> 
-    var obj = {
+    var opt = {
 	"folder_out": "\/home\/pbellec\/demo_niak\/fmri_preprocess\/",
 	"size_output": "quality_control",
 	"slice_timing": {
@@ -224,13 +219,15 @@
     
 var node = new PrettyJSON.view.Node({
   el:$('#elem'),
-  data: obj
+  data: opt
 });
+node.collapseAll()
 
 var node = new PrettyJSON.view.Node({
   el:$('#elem2'),
   data: filesIn
 });
+node.collapseAll()
 
 </script>
 </body>

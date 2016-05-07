@@ -5,10 +5,10 @@
 <head>
   <title>Report on the quality of MRI registration</title>
   <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
-  <link rel="stylesheet" type="text/css" href="assets/bootstrap/bootstrap.min.css" />
-  <link rel="stylesheet" type="text/css" href="assets/keen/keen-dashboards.css" />
-  <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Quicksand" />
-  <link rel="stylesheet" type="text/css" href="assets/pretty-json/pretty-json.css" />
+  <link rel="stylesheet" type="text/css" href="assets/bootstrap/bootstrap.min.css" /> <!--from keen.io-->
+  <link rel="stylesheet" type="text/css" href="assets/keen/keen-dashboards.css" />    <!--from keen.io-->
+  <link rel="stylesheet" type="text/css" href="assets/pretty-json/pretty-json.css" /> <!--from pretty-json-->
+  <link href="assets/select2/select2.min.css" rel="stylesheet" /> <!--from select 2-->
 </head>
 <body class="application">
 
@@ -95,7 +95,11 @@
       <div class="col-sm-6">
         <div class="chart-wrapper">
           <div class="chart-title">
-            Input files
+            Input files: 
+            <select class="js-example-basic-single">
+            <option value="AL">Alabama</option>
+            <option value="WY">Wyoming</option>
+          </select>
           </div>
           <div class="chart-stage">
             <div class="chart-stage">
@@ -126,6 +130,7 @@
   <script type="text/javascript" src="assets/underscore/underscore-min.js"></script>   <!--from pretty-json-->
   <script type="text/javascript" src="assets/backbone/backbone-min.js"></script>       <!--from pretty-json-->
   <script type="text/javascript" src="assets/pretty-json/pretty-json-min.js"></script> <!--from pretty-json-->
+  <script src="assets/select2/select2.min.js"></script> <!--from select 2-->
   
   <!--Custom script with the input files and parameters of the data coded in JSON-->
   <script> 
@@ -229,6 +234,11 @@ var node = new PrettyJSON.view.Node({
 });
 node.collapseAll()
 
+</script>
+<script type="text/javascript">
+$(document).ready(function() {
+  $(".js-example-basic-single").select2();
+});
 </script>
 </body>
 </html>

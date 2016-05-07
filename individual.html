@@ -105,16 +105,15 @@
       <div class="col-sm-6">
         <div class="chart-wrapper">
           <div class="chart-title">
-            Input files for subject 
+            BOLD vs T1 scan for subject  
             <select class="js-example-basic-single" style="width: 50%">
-              <option value="Subject1">Subject1</option>
-              <option value="Subject2">Subject2</option>
+              <option value="X0010001">X0010001</option>
+              <option value="X0010002">X0010002</option>
             </select>
           </div>
           <div class="chart-stage">
             <div class="chart-stage">
-            <div id="elem2" style="background-image: url('summary_X0010001_anat.jpg')">
-              <img src="summary_X0010001_func.jpg" />
+            <div id="elem2">
             </div>
           <!--  <div id="elem2">
             </div>
@@ -158,40 +157,33 @@
   $eventSelect.on("select2:select", function (e) { info(e); })
   
   function info (evt) {
-    switch(evt.params.data.id) {
-        case "Subject1":
-            var filesIn = {
-		"anat": "\/home\/pbellec\/demo_niak\/anat_subject1.mnc.gz",
-		"fmri": {
-			"session1": {
-				"motor": "\/home\/pbellec\/demo_niak\/func_motor_subject1.mnc.gz",
-				"rest": "\/home\/pbellec\/demo_niak\/func_rest_subject1.mnc.gz"
-			}
-		}
-            };
-            break;
-        case "Subject2":
-            var filesIn = {
-		"anat": "\/home\/pbellec\/demo_niak\/anat_subject2.mnc.gz",
-		"fmri": {
-			"session1": {
-				"motor": "\/home\/pbellec\/demo_niak\/func_motor_subject2.mnc.gz",
-				"rest": "\/home\/pbellec\/demo_niak\/func_rest_subject2.mnc.gz"
-			}
-		}
-	};
-	break;
+    var id = evt.params.data.id;
+    var item = document.getElementById("elem2"); 
+    var fig = document.createElement("img");
+    fig.src = "summary_" + id + "_func.jpg";
+    item.replaceChild(fig, item.childNodes[0]);
+    document.getElementById("elem2").style.backgroundImage='url(summary_' + id + '_anat.jpg';
+    }  
+  
+  function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+  }
+  
+  var idSubject = getParameterByName('id');
+  if (!idSubject) {
+    var idSubject = "X0010001";
     };
   
-    var node2 = new PrettyJSON.view.Node({
-      el:$('#elem2'),
-      data: filesIn,
-    });
-    node2.expandAll();
-  }  
-  
-  var evt = {params:{data:{id:"Subject1"}}};
+  var evt = {params:{data:{id:idSubject}}};
   info (evt);
+  $eventSelect.val(idSubject); 
+  $eventSelect.trigger('change'); 
   
   var opt = {
 	"folder_out": "\/home\/pbellec\/demo_niak\/fmri_preprocess\/",

@@ -155,8 +155,10 @@
     var item = document.getElementById("elem2"); 
     var fig = document.createElement("img");
     fig.src = "summary_" + id + "_func.jpg";
+    fig.setAttribute("width", "100%");
     item.replaceChild(fig, item.childNodes[0]);
     document.getElementById("elem2").style.backgroundImage='url(summary_' + id + '_anat.jpg';
+    document.getElementById("elem2").style.backgroundSize ="100%";
     }  
   
   function getParameterByName(name, url) {

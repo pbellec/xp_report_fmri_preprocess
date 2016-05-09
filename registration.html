@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+
+<style>
+#elem2 img{
+    -webkit-transition: opacity 0.75s; /* Safari */
+    transition: opacity 0.75s;
+}
+#elem2 img:hover{
+    opacity:0;
+}
+
+</style>
+
+<head>
+  <title>Report on the quality of MRI registration</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
+  <link rel="stylesheet" type="text/css" href="assets/bootstrap/bootstrap.min.css" /> <!--from keen.io-->
+  <link rel="stylesheet" type="text/css" href="assets/keen/keen-dashboards.css" />    <!--from keen.io-->
+  <link rel="stylesheet" type="text/css" href="assets/pretty-json/pretty-json.css" /> <!--from pretty-json-->
+  <link href="assets/select2/select2.min.css" rel="stylesheet" /> <!--from select 2-->
+  <link href="assets/c3js/c3.min.css" rel="stylesheet" type="text/css"> <!--from c3.js-->
+</head>
+<body class="application">
+
+  <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../">
+          <span class="glyphicon glyphicon-chevron-left"></span>
+        </a>
+        <a class="navbar-brand" href="./">Layouts &raquo; Summary</a>
+      </div>
+      <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-left">
+          <li><a href="registration.html">Registration</a></li>
+          <li><a href="motion.html">Motion</a></li>
+          <li><a href="parameters.html">Parameters</a></li>
+          <li><a href="logs.html">Logs</a></li>           
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Cell Title
+          </div>
+          <div class="chart-stage">
+              <img data-src="holder.js/100%x120/white">
+          </div>
+          <div class="chart-notes">
+            Notes about this chart 1
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Cell Title
+          </div>
+          <div class="chart-stage">
+              
+          </div>
+          <div class="chart-notes">
+            Notes about this chart 2
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Cell Title
+          </div>
+          <div class="chart-stage">
+            
+          </div>
+          <div class="chart-notes">
+            Notes about this chart 3
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            BOLD vs T1 scan for subject  
+            <select class="js-example-basic-single" style="width: 50%">
+              <option value="X0010001">X0010001</option>
+              <option value="X0010002">X0010002</option>
+            </select>
+          </div>
+          <div class="chart-stage">
+            <div class="chart-stage">
+            <div id="elem2">
+            </div>
+          <!--  <div id="elem2">
+            </div>
+            -->
+          </div>
+          <div class="chart-notes">
+            Hover the mouse over to switch between images.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <hr>
+
+    <p class="small text-muted">Built with &#9829; by <a href="http://niak.simexp-lab.org">NIAK</a> using dashboards from <a href="https://keen.io">Keen IO</a></p>
+
+  </div>
+
+  <!--Dependencies-->
+  <script src="assets/d3js/d3.min.js" charset="utf-8"></script>
+  <script src="assets/c3js/c3.min.js"></script></head>
+  <script type="text/javascript" src="assets/jquery/jquery.min.js"></script>       <!--from keen.io-->
+  <script type="text/javascript" src="assets/bootstrap/bootstrap.min.js"></script> <!--from keen.io-->
+  <script type="text/javascript" src="assets/keen/keen.min.js"></script>           <!--from keen.io-->
+  <script type="text/javascript" src="assets/keen/meta.js"></script>               <!--from keen.io-->
+  <script type="text/javascript" src="assets/underscore/underscore-min.js"></script>   <!--from pretty-json-->
+  <script type="text/javascript" src="assets/backbone/backbone-min.js"></script>       <!--from pretty-json-->
+  <script type="text/javascript" src="assets/pretty-json/pretty-json-min.js"></script> <!--from pretty-json-->
+  <script src="assets/select2/select2.min.js"></script> <!--from select 2-->
+  
+  <!--Custom script to add a subject selection-->
+  <script>
+  $(document).ready(function() {
+  $(".js-example-basic-single").select2();
+  
+  });
+    
+  var $eventSelect = $(".js-example-basic-single");
+  
+  $eventSelect.on("select2:select", function (e) { info(e); })
+  
+  function info (evt) {
+    var id = evt.params.data.id;
+    var item = document.getElementById("elem2"); 
+    var fig = document.createElement("img");
+    fig.src = "summary_" + id + "_func.jpg";
+    item.replaceChild(fig, item.childNodes[0]);
+    document.getElementById("elem2").style.backgroundImage='url(summary_' + id + '_anat.jpg';
+    }  
+  
+  function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+  }
+  
+  var idSubject = getParameterByName('id');
+  if (!idSubject) {
+    var idSubject = "X0010001";
+    };
+  
+  var evt = {params:{data:{id:idSubject}}};
+  info (evt);
+  $eventSelect.val(idSubject); 
+  $eventSelect.trigger('change'); 
+  </script>
+
+</body>
+</html>

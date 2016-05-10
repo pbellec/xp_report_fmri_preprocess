@@ -2,11 +2,39 @@
 <html>
 
 <style>
-#elem2 img{
+
+
+.slider-Wrapper
+{
+    position:absolute;
+    z-index:20;
+    top:15px;
+    margin-left:0%;
+    width:1px;
+}
+
+a.slider-Prev, a.slider-Next
+{
+    width:50px;height:150px;
+    background:transparent url(assets/jsImageSlider/navbuttons2.gif); 
+    display:block; 
+    cursor:pointer;
+    position:absolute;
+    top:0;
+    user-select: none;
+}
+a.slider-Prev{background-position:0 0; left:0px;}
+a.slider-Next{background-position:0 -150px; left:80px;}
+
+a.slider-Prev:hover{background-position:50px 0;}
+a.slider-Next:hover{background-position:50px -150px;}
+
+.register img{
     -webkit-transition: opacity 0.75s; /* Safari */
     transition: opacity 0.75s;
 }
-#elem2 img:hover{
+
+.register img:hover{
     opacity:0;
 }
 
@@ -21,21 +49,13 @@
   <link href="assets/select2/select2.min.css" rel="stylesheet" /> <!--from select 2-->
   <link href="assets/c3js/c3.min.css" rel="stylesheet" type="text/css"> <!--from c3.js-->
 </head>
+
 <body class="application">
 
   <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container-fluid">
       <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="../">
-          <span class="glyphicon glyphicon-chevron-left"></span>
-        </a>
-        <a class="navbar-brand" href="./">Layouts &raquo; Summary</a>
+        <a class="navbar-brand" href="http://niak.simexp-lab.org/">Pipeline summary</a>
       </div>
       <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav navbar-left">
@@ -85,13 +105,22 @@
       <div class="col-sm-6">
         <div class="chart-wrapper">
           <div class="chart-title">
-            Cell Title
+            Individual vs template T1 scan for subject
+            <select class="select-subject" style="width: 50%">
+              <option value="1">X0010001</option>
+              <option value="2">X0010002</option>
+            </select>
           </div>
           <div class="chart-stage">
-            
+            <div id="T1-indVsTemplate" class="register">
+              <div class="slider-Wrapper">
+                <a class="slider-Prev"></a>
+                <a class="slider-Next"></a>
+              </div>
+            </div>
           </div>
           <div class="chart-notes">
-            Notes about this chart 3
+            Hover the mouse over to switch between images.
           </div>
         </div>
       </div>
@@ -99,19 +128,20 @@
         <div class="chart-wrapper">
           <div class="chart-title">
             BOLD vs T1 scan for subject  
-            <select class="js-example-basic-single" style="width: 50%">
-              <option value="X0010001">X0010001</option>
-              <option value="X0010002">X0010002</option>
+            <select id="select-BOLD" class="select-subject" style="width: 50%">
+              <option value="1">X0010001</option>
+              <option value="2">X0010002</option>
             </select>
           </div>
           <div class="chart-stage">
             <div class="chart-stage">
-            <div id="elem2">
+            <div id="boldVsT1" class="register">
+              <div class="slider-Wrapper">
+                <a class="slider-Prev"></a>
+                <a class="slider-Next"></a>
+              </div>
             </div>
-          <!--  <div id="elem2">
-            </div>
-            -->
-          </div>
+        </div>
           <div class="chart-notes">
             Hover the mouse over to switch between images.
           </div>
@@ -119,7 +149,6 @@
       </div>
 
     </div>
-
 
     <hr>
 
@@ -142,24 +171,74 @@
   <!--Custom script to add a subject selection-->
   <script>
   $(document).ready(function() {
-  $(".js-example-basic-single").select2();
-  
-  });
+  $(".select-subject").select2();  
     
-  var $eventSelect = $(".js-example-basic-single");
+  var $eventSelect = $(".select-subject");
   
-  $eventSelect.on("select2:select", function (e) { info(e); })
+  $eventSelect.on("select2:select", function (e) { setImg(e); })
   
-  function info (evt) {
-    var id = evt.params.data.id;
-    var item = document.getElementById("elem2"); 
-    var fig = document.createElement("img");
-    fig.src = "summary_" + id + "_func.jpg";
-    fig.setAttribute("width", "100%");
-    item.replaceChild(fig, item.childNodes[0]);
-    document.getElementById("elem2").style.backgroundImage='url(summary_' + id + '_anat.jpg';
-    document.getElementById("elem2").style.backgroundSize ="100%";
+  function setImg (evt) {
+    var subject = evt.params.data.text;
+    var figBOLD = document.getElementById("boldVsT1"); 
+    var newFigBOLD = document.createElement("img");
+    var figT1 = document.getElementById("T1-indVsTemplate"); 
+    var newFigT1 = document.createElement("img");
+    newFigBOLD.src = "summary_" + subject + "_func.jpg";
+    newFigBOLD.setAttribute("width", "100%");
+    newFigT1.src = "summary_" + subject + "_anat.jpg";
+    newFigT1.setAttribute("width", "100%");
+    figBOLD.replaceChild(newFigBOLD, figBOLD.childNodes[0]);
+    figT1.replaceChild(newFigT1, figT1.childNodes[0]);
+    figBOLD.style.backgroundImage='url(summary_' + subject + '_anat.jpg)';
+    figBOLD.style.backgroundSize ="100%";
+    figT1.style.backgroundImage='url(summary_template.jpg)';
+    figT1.style.backgroundSize ="100%";
     }  
+    
+  function setFigById (id) {
+    currId = id.toString();
+    $es = $(".select-subject");
+    $es.val(currId);
+    $es.trigger('change');
+    subject = $("#select-BOLD option[value=" + currId + "]").text();
+    var evt = {params:{data:{text:subject}}};
+    setImg (evt);
+    }
+
+  function nextSubject () {
+    $es = $(".select-subject");
+    currId = $es.val();
+    currId = parseInt(currId);
+    if (currId < 2) {
+       currId+=1;
+    }
+    setFigById(currId);
+    }
+    
+  function prevSubject () {
+    $es = $(".select-subject");
+    currId = $es.val();
+    currId = parseInt(currId);
+    if (currId > 1) {
+       currId-=1;
+    }
+    setFigById(currId);
+    }
+    
+  window.onload = function() {
+    document.getElementsByClassName("slider-Next")[0].onclick = function fun() {
+        nextSubject();
+      }
+    document.getElementsByClassName("slider-Next")[1].onclick = function fun() {
+        nextSubject();
+      }
+    document.getElementsByClassName("slider-Prev")[0].onclick = function fun() {
+        prevSubject();
+      }
+    document.getElementsByClassName("slider-Prev")[1].onclick = function fun() {
+        prevSubject();
+      }
+}
   
   function getParameterByName(name, url) {
     if (!url) url = window.location.href;
@@ -171,15 +250,18 @@
     return decodeURIComponent(results[2].replace(/\+/g, " "));
   }
   
-  var idSubject = getParameterByName('id');
-  if (!idSubject) {
-    var idSubject = "X0010001";
+  var subject = getParameterByName('id');
+  if (!subject) {
+    var subject = "X0010001";
+    var id = "1";
     };
   
-  var evt = {params:{data:{id:idSubject}}};
-  info (evt);
-  $eventSelect.val(idSubject); 
+  var evt = {params:{data:{text:subject}}};
+  setImg (evt);
+  $eventSelect.val(id); 
   $eventSelect.trigger('change'); 
+  });
+  
   </script>
 
 </body>

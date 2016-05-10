@@ -178,7 +178,11 @@ a.slider-Next:hover{background-position:50px -150px;}
   $eventSelect.on("select2:select", function (e) { setImg(e); })
   
   function setImg (evt) {
-    var subject = evt.params.data.text;
+    var id = evt.params.data.id;
+    subject = $("#select-BOLD option[value=" + id + "]").text();
+    $es = $(".select-subject");
+    $es.val(id);
+    $es.trigger('change');
     var figBOLD = document.getElementById("boldVsT1"); 
     var newFigBOLD = document.createElement("img");
     var figT1 = document.getElementById("T1-indVsTemplate"); 
@@ -195,16 +199,6 @@ a.slider-Next:hover{background-position:50px -150px;}
     figT1.style.backgroundSize ="100%";
     }  
     
-  function setFigById (id) {
-    currId = id.toString();
-    $es = $(".select-subject");
-    $es.val(currId);
-    $es.trigger('change');
-    subject = $("#select-BOLD option[value=" + currId + "]").text();
-    var evt = {params:{data:{text:subject}}};
-    setImg (evt);
-    }
-
   function nextSubject () {
     $es = $(".select-subject");
     currId = $es.val();
@@ -212,7 +206,8 @@ a.slider-Next:hover{background-position:50px -150px;}
     if (currId < 2) {
        currId+=1;
     }
-    setFigById(currId);
+    var evt = {params:{data:{id:currId.toString()}}};
+    setImg (evt);
     }
     
   function prevSubject () {
@@ -222,7 +217,9 @@ a.slider-Next:hover{background-position:50px -150px;}
     if (currId > 1) {
        currId-=1;
     }
-    setFigById(currId);
+    currId = id.toString();
+    var evt = {params:{data:{text:subject}}};
+    setImg (evt);
     }
     
   window.onload = function() {
@@ -256,10 +253,8 @@ a.slider-Next:hover{background-position:50px -150px;}
     var id = "1";
     };
   
-  var evt = {params:{data:{text:subject}}};
-  setImg (evt);
-  $eventSelect.val(id); 
-  $eventSelect.trigger('change'); 
+  var evt = {params:{data:{id:id}}};
+  setImg (evt); 
   });
   
   </script>

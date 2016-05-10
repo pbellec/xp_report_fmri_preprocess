@@ -24,7 +24,7 @@ a.slider-Prev, a.slider-Next
     user-select: none;
 }
 a.slider-Prev{background-position:0 0; left:0px;}
-a.slider-Next{background-position:0 -150px; left:80px;}
+a.slider-Next{background-position:0 -150px; left:50px;}
 
 a.slider-Prev:hover{background-position:50px 0;}
 a.slider-Next:hover{background-position:50px -150px;}
@@ -55,13 +55,12 @@ a.slider-Next:hover{background-position:50px -150px;}
   <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container-fluid">
       <div class="navbar-header">
-        <a class="navbar-brand" href="http://niak.simexp-lab.org/">Pipeline summary</a>
+        <a class="navbar-brand" href="summary.html">fMRI preprocess summary</a>
       </div>
       <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav navbar-left">
           <li><a href="registration.html">Registration</a></li>
           <li><a href="motion.html">Motion</a></li>
-          <li><a href="parameters.html">Parameters</a></li>
           <li><a href="logs.html">Logs</a></li>           
         </ul>
       </div>
@@ -71,29 +70,31 @@ a.slider-Next:hover{background-position:50px -150px;}
   <div class="container-fluid">
 
     <div class="row">
+    
       <div class="col-sm-6">
         <div class="chart-wrapper">
           <div class="chart-title">
-            Cell Title
+            Summary T1 registration
           </div>
           <div class="chart-stage">
-              <img data-src="holder.js/100%x120/white">
+              <div id="chart-T1" style="width:95%"></div>
           </div>
           <div class="chart-notes">
-            Notes about this chart 1
+            Click on a bar to select a subject. Mouse scroll to zoom.
           </div>
         </div>
       </div>
+      
       <div class="col-sm-6">
         <div class="chart-wrapper">
           <div class="chart-title">
-            Cell Title
+            Summary BOLD registration
           </div>
           <div class="chart-stage">
-              
+              <div id="chart-BOLD" style="width:95%"></div>
           </div>
           <div class="chart-notes">
-            Notes about this chart 2
+            Click on a bar to select a subject. Mouse scroll to zoom.
           </div>
         </div>
       </div>
@@ -171,6 +172,56 @@ a.slider-Next:hover{background-position:50px -150px;}
   <!--Custom script to add a subject selection-->
   <script>
   $(document).ready(function() {
+  
+    var chart = c3.generate({
+    bindto: '#chart-T1',
+        data: {
+        x: 'Subject',
+        columns: [
+            ['Subject','X0010001', 'X0010002'],
+            ['corr_target',0.67,0.82]
+        ],
+        type: 'bar',
+        onclick: function (d) { selectSubject(d,'chart-T1')}
+    },
+    axis: {
+        x: {
+            type: 'category',
+            }
+        },
+    zoom: {
+        enabled: true
+    },
+    selection: {
+        enabled: true
+    }
+  });
+  $('#chart-T1').data('c3-chart', chart);
+  
+  var chart2 = c3.generate({
+    bindto: '#chart-BOLD',
+        data: {
+        columns: [
+            ['corr_target',0.53,0.62]
+        ],
+        type: 'bar',
+        onclick: function (d) { selectSubject(d,'chart-BOLD')}
+    },
+    axis: {
+        x: {
+            type: 'category',
+            categories: ['X0010002', 'X0010001']
+            }
+        },
+    zoom: {
+        enabled: true
+    },
+    selection: {
+        enabled: true
+    }
+  });
+  $('#chart-BOLD').data('c3-chart', chart2);
+  
   $(".select-subject").select2();  
     
   var $eventSelect = $(".select-subject");
@@ -198,13 +249,24 @@ a.slider-Next:hover{background-position:50px -150px;}
     figT1.style.backgroundImage='url(summary_template.jpg)';
     figT1.style.backgroundSize ="100%";
     }  
+  
+  function selectSubject (d,type) {
+    charti = $('#' + type).data('c3-chart');
+    subject = charti.internal.config.axis_x_categories[d.x];
+    id = $("#select-BOLD > option:contains("+subject+")").index();
+    id = parseInt(id)+1;
+    evtSelect = {params:{data:{id:id.toString()}}};
+    setImg (evtSelect);
+    }
     
   function nextSubject () {
     $es = $(".select-subject");
     currId = $es.val();
     currId = parseInt(currId);
     if (currId < 2) {
-       currId+=1;
+      currId+=1;
+    } else {
+      currId = 1;
     }
     var evt = {params:{data:{id:currId.toString()}}};
     setImg (evt);
@@ -216,6 +278,8 @@ a.slider-Next:hover{background-position:50px -150px;}
     currId = parseInt(currId);
     if (currId > 1) {
        currId-=1;
+    } else {
+       currId = 2;
     }
     var evt = {params:{data:{id:currId.toString()}}};
     setImg (evt);

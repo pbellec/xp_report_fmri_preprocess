@@ -217,8 +217,7 @@ a.slider-Next:hover{background-position:50px -150px;}
     if (currId > 1) {
        currId-=1;
     }
-    currId = id.toString();
-    var evt = {params:{data:{text:subject}}};
+    var evt = {params:{data:{id:currId.toString()}}};
     setImg (evt);
     }
     

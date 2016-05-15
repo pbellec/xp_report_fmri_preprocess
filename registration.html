@@ -3,31 +3,33 @@
 
 <style>
 
-
-.slider-Wrapper
-{
-    position:absolute;
-    z-index:20;
-    top:15px;
-    margin-left:0%;
-    width:1px;
+.sliderNext {
+  position: absolute;
+  top: 40%;
+  right: 2.5%;
+  object-fit: none;
+  object-position: 0 -150px;
+  width: 50px;
+  height: 150px;
 }
 
-a.slider-Prev, a.slider-Next
-{
-    width:50px;height:150px;
-    background:transparent url(assets/jsImageSlider/navbuttons2.gif); 
-    display:block; 
-    cursor:pointer;
-    position:absolute;
-    top:0;
-    user-select: none;
+.sliderNext:hover{
+  object-position: -50px -150px;
 }
-a.slider-Prev{background-position:0 0; left:0px;}
-a.slider-Next{background-position:0 -150px; left:50px;}
 
-a.slider-Prev:hover{background-position:50px 0;}
-a.slider-Next:hover{background-position:50px -150px;}
+.sliderPrev {
+  position: absolute;
+  top: 40%;
+  left: 2.5%;
+  object-fit: none;
+  object-position: 0 0;
+  width: 50px;
+  height: 150px;
+}
+
+.sliderPrev:hover{
+  object-position: -50px 0;
+}
 
 .register img{
     -webkit-transition: opacity 0.75s; /* Safari */
@@ -55,6 +57,12 @@ a.slider-Next:hover{background-position:50px -150px;}
   <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container-fluid">
       <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
         <a class="navbar-brand" href="http://niak.simexp-lab.org/pipe_preprocessing.html">fMRI preprocessing pipeline</a>
       </div>
       <div class="navbar-collapse collapse">
@@ -114,11 +122,10 @@ a.slider-Next:hover{background-position:50px -150px;}
           </div>
           <div class="chart-stage">
             <div id="T1-indVsTemplate" class="register">
-              <div class="slider-Wrapper">
-                <a class="slider-Prev"></a>
-                <a class="slider-Next"></a>
-              </div>
+              <img class="T1" width=100%>
             </div>
+            <img class="sliderNext" src="assets/jsImageSlider/navbuttons2.gif" >
+            <img class="sliderPrev" src="assets/jsImageSlider/navbuttons2.gif" >
           </div>
           <div class="chart-notes">
             Hover the mouse over to switch between images.
@@ -137,12 +144,11 @@ a.slider-Next:hover{background-position:50px -150px;}
           <div class="chart-stage">
             <div class="chart-stage">
             <div id="boldVsT1" class="register">
-              <div class="slider-Wrapper">
-                <a class="slider-Prev"></a>
-                <a class="slider-Next"></a>
-              </div>
+              <img class="BOLD" width=100%>
             </div>
-        </div>
+            <img class="sliderNext" src="assets/jsImageSlider/navbuttons2.gif" >
+            <img class="sliderPrev" src="assets/jsImageSlider/navbuttons2.gif" >
+          </div>
           <div class="chart-notes">
             Hover the mouse over to switch between images.
           </div>
@@ -234,20 +240,24 @@ a.slider-Next:hover{background-position:50px -150px;}
     $es = $(".select-subject");
     $es.val(id);
     $es.trigger('change');
-    var figBOLD = document.getElementById("boldVsT1"); 
+    var figBOLD = $(".BOLD");
     var newFigBOLD = document.createElement("img");
-    var figT1 = document.getElementById("T1-indVsTemplate"); 
+    var figT1 = $(".T1");
     var newFigT1 = document.createElement("img");
     newFigBOLD.src = "summary_" + subject + "_func.jpg";
     newFigBOLD.setAttribute("width", "100%");
+    newFigBOLD.className = "BOLD";
     newFigT1.src = "summary_" + subject + "_anat.jpg";
     newFigT1.setAttribute("width", "100%");
-    figBOLD.replaceChild(newFigBOLD, figBOLD.childNodes[0]);
-    figT1.replaceChild(newFigT1, figT1.childNodes[0]);
-    figBOLD.style.backgroundImage='url(summary_' + subject + '_anat.jpg)';
-    figBOLD.style.backgroundSize ="100%";
-    figT1.style.backgroundImage='url(summary_template.jpg)';
-    figT1.style.backgroundSize ="100%";
+    newFigT1.className = "T1";
+    figBOLD.replaceWith(newFigBOLD);
+    figT1.replaceWith(newFigT1);
+    figBoldVsT1 = $("#boldVsT1");
+    figBoldVsT1.css("backgroundImage","url(summary_" + subject + "_anat.jpg)");
+    figBoldVsT1.css("backgroundSize","100%");
+    figT1vsTemplate = $("#T1-indVsTemplate");
+    figT1vsTemplate.css("backgroundImage","url(summary_template.jpg)");
+    figT1vsTemplate.css("backgroundSize","100%");
     }  
   
   function selectSubject (d,type) {
@@ -286,16 +296,16 @@ a.slider-Next:hover{background-position:50px -150px;}
     }
     
   window.onload = function() {
-    document.getElementsByClassName("slider-Next")[0].onclick = function fun() {
+    document.getElementsByClassName("sliderNext")[0].onclick = function fun() {
         nextSubject();
       }
-    document.getElementsByClassName("slider-Next")[1].onclick = function fun() {
+    document.getElementsByClassName("sliderNext")[1].onclick = function fun() {
         nextSubject();
       }
-    document.getElementsByClassName("slider-Prev")[0].onclick = function fun() {
+    document.getElementsByClassName("sliderPrev")[0].onclick = function fun() {
         prevSubject();
       }
-    document.getElementsByClassName("slider-Prev")[1].onclick = function fun() {
+    document.getElementsByClassName("sliderPrev")[1].onclick = function fun() {
         prevSubject();
       }
 }

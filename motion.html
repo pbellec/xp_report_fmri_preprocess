@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Report on fMRI motion levels</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
+  <link rel="stylesheet" type="text/css" href="motion.css" /> <!--from keen.io-->
+  <link rel="stylesheet" type="text/css" href="assets/bootstrap/bootstrap.min.css" /> <!--from keen.io-->
+  <link rel="stylesheet" type="text/css" href="assets/keen/keen-dashboards.css" />    <!--from keen.io-->
+  <link rel="stylesheet" type="text/css" href="assets/pretty-json/pretty-json.css" /> <!--from pretty-json-->
+  <link href="assets/select2/select2.min.css" rel="stylesheet" /> <!--from select 2-->
+  <link href="assets/c3js/c3.min.css" rel="stylesheet" type="text/css"> <!--from c3.js-->
+</head>
+<body class="application">
+
+  <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="http://niak.simexp-lab.org/pipe_preprocessing.html">fMRI preprocessing pipeline</a>
+      </div>
+      <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-left">
+          <li><a href="summary.html">Summary</a></li>
+          <li><a href="registration.html">Registration</a></li>
+          <li><a href="motion.html">Motion</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+
+    <div class="row">
+      <div class="col-sm-6 col-md-4">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Translation parameters
+          </div>
+          <div class="chart-stage">
+            <div id="chartTsl" style="width:100%"></div>
+          </div>
+          <div class="chart-notes">
+            Click to select a time point. Mouse scroll to zoom.
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-4">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Rotation parameters
+          </div>
+          <div class="chart-stage">
+            <div id="chartRot" style="width:100%"></div>
+          </div>
+          <div class="chart-notes">
+            Click to select a time point. Mouse scroll to zoom.
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-4">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Frame displacement
+          </div>
+          <div class="chart-stage">
+            <div id="chartFd" style="width:100%"></div>
+          </div>
+          <div class="chart-notes">
+            Click to select a time point. Mouse scroll to zoom.
+          </div>
+        </div>
+      </div>
+<!-- end of three -->
+      <div class="col-sm-6 col-md-4">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Cell Title
+          </div>
+          <div class="chart-stage">
+            <img data-src="holder.js/100%x180/white">
+          </div>
+          <div class="chart-notes">
+            Notes about this chart
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-4">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Cell Title
+          </div>
+          <div class="chart-stage">
+            <img data-src="holder.js/100%x180/white">
+          </div>
+          <div class="chart-notes">
+            Notes about this chart
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-4">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Cell Title
+          </div>
+          <div class="chart-stage">
+            <img data-src="holder.js/100%x180/white">
+          </div>
+          <div class="chart-notes">
+            Notes about this chart
+          </div>
+        </div>
+      </div>
+<!-- end of three -->
+    </div>
+
+
+
+    <hr>
+
+    <p class="small text-muted">Built with &#9829; by <a href="http://niak.simexp-lab.org">NIAK</a> using dashboards from <a href="https://keen.io">Keen IO</a></p>
+
+  </div>
+
+  <!--Dependencies-->
+  <script src="assets/d3js/d3.min.js" charset="utf-8"></script>
+  <script src="assets/c3js/c3.min.js"></script></head>
+  <script type="text/javascript" src="assets/jquery/jquery.min.js"></script>       <!--from keen.io-->
+  <script type="text/javascript" src="assets/bootstrap/bootstrap.min.js"></script> <!--from keen.io-->
+  <script type="text/javascript" src="assets/keen/keen.min.js"></script>           <!--from keen.io-->
+  <script type="text/javascript" src="assets/keen/meta.js"></script>               <!--from keen.io-->
+  <script src="assets/select2/select2.min.js"></script> <!--from select 2-->
+  <script src="assets/papaparse/papaparse.min.js"></script> <!--from select 2-->
+  
+  <script> 
+  var tsl = {
+  columns: [
+    $TSL
+    ]
+  };
+  
+  var rot = {
+  columns: [
+    $ROT
+    ]
+  };
+
+  var fd = {
+  columns: [
+    $FD
+    ]
+  };
+    
+  var chartTsl = c3.generate({
+    bindto: '#chartTsl',
+    data: tsl,
+    axis: {
+        x: {
+            label: 'Time (sec)'
+        },
+        y: {
+            label: 'Translation (mm)'
+        }
+    },
+    zoom: {
+      enabled: true
+    }
+  });
+  
+  var chartRot = c3.generate({
+    bindto: '#chartRot',
+    data: rot,
+    axis: {
+        x: {
+            label: 'Time (sec)'
+        },
+        y: {
+            label: 'Rotation (degrees))'
+        }
+    },
+    zoom: {
+      enabled: true
+    }
+  });
+  
+  var chartRot = c3.generate({
+    bindto: '#chartFd',
+    data: fd,
+    axis: {
+        x: {
+            label: 'Time (sec)'
+        },
+        y: {
+            label: 'Frame displacement (pseudo mm))'
+        },
+        y2: {
+            show: true,
+            label: 'Scrubbing (0: no / 1: yes))'
+        }
+    },
+    zoom: {
+      enabled: true
+    }
+  });
+  </script>
+ 
+</body>
+</html>

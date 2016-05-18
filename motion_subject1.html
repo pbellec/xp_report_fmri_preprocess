@@ -80,13 +80,17 @@
       <div class="col-sm-6 col-md-4">
         <div class="chart-wrapper">
           <div class="chart-title">
-            Cell Title
+            fMRI time frames in native space
           </div>
           <div class="chart-stage">
-            <img data-src="holder.js/100%x180/white">
+            <div id="motionNative">
+              <img src="motion_subject1_native.png" width="192" height="3200">
+            </div>
+            <img class="sliderNext" src="assets/jsImageSlider/navbuttons2.gif" >
+            <img class="sliderPrev" src="assets/jsImageSlider/navbuttons2.gif" >
           </div>
           <div class="chart-notes">
-            Notes about this chart
+            Click the left/right arrows to go forward/backward in time.
           </div>
         </div>
       </div>
@@ -135,7 +139,6 @@
   <script type="text/javascript" src="assets/keen/keen.min.js"></script>           <!--from keen.io-->
   <script type="text/javascript" src="assets/keen/meta.js"></script>               <!--from keen.io-->
   <script src="assets/select2/select2.min.js"></script> <!--from select 2-->
-  <script src="assets/papaparse/papaparse.min.js"></script> <!--from select 2-->
   
   <script> 
   var tsl = {
@@ -143,7 +146,8 @@
     ['motion_tx',0.020 ,0.075 ,0.045 ,0.087 ,0.052 ,0.023 ,0.011 ,0.024 ,-0.009 ,-0.049 ,-0.058 ,0.020 ,-0.017 ,0.007 ,-0.012 ,-0.028 ,-0.023 ,-0.040 ,-0.028 ,0.001 ,-0.008 ,0.001 ,0.034 ,0.027 ,0.025 ,0.014 ,0.018 ,0.020 ,0.031 ,0.012 ],
 ['motion_ty',-0.012 ,-0.012 ,0.017 ,-0.003 ,-0.006 ,-0.028 ,-0.001 ,-0.016 ,0.003 ,0.001 ,0.022 ,-0.007 ,0.045 ,-0.008 ,-0.073 ,-0.037 ,-0.020 ,0.022 ,0.014 ,-0.012 ,-0.021 ,-0.047 ,-0.003 ,-0.039 ,-0.049 ,0.004 ,-0.017 ,0.017 ,-0.011 ,0.000 ],
 ['motion_tz',-0.266 ,-0.126 ,-0.106 ,-0.093 ,0.009 ,-0.038 ,-0.002 ,-0.006 ,0.005 ,0.061 ,0.007 ,-0.184 ,-0.001 ,0.028 ,0.091 ,0.109 ,0.122 ,0.108 ,0.095 ,0.063 ,0.054 ,0.005 ,-0.136 ,0.011 ,0.006 ,-0.015 ,-0.008 ,0.064 ,0.075 ,0.066 ]
-    ]
+    ],
+    onclick: function (d) { selectTime("motionNative",-d.index*64);}
   };
   
   var rot = {
@@ -160,13 +164,38 @@
 ['scrub',0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,1 ,1 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ]
     ]
   };
-    
+      
+  function selectTime(type,tt) {
+    $("#"+type+" img").css("margin-top", tt+"px");
+    };
+
+  function nextTime(type) {
+    currOffset = $("#"+type+" img").css("margin-top");
+    nextOffset = Math.max(parseInt(currOffset,10)-64,-3200+64);
+    selectTime(type , nextOffset);
+    };
+
+  function prevTime(type) {
+    currOffset = $("#"+type+" img").css("margin-top");
+    nextOffset = Math.min(parseInt(currOffset,10)+64,0);
+    selectTime(type , nextOffset);
+    };
+
+  window.onload = function() {
+    document.getElementsByClassName("sliderNext")[0].onclick = function fun() {
+      nextTime("motionNative");
+      }
+    document.getElementsByClassName("sliderPrev")[0].onclick = function fun() {
+      prevTime("motionNative");
+      }
+    };
+
   var chartTsl = c3.generate({
     bindto: '#chartTsl',
     data: tsl,
     axis: {
         x: {
-            label: 'Time (sec)'
+            label: 'Time (TRs)'
         },
         y: {
             label: 'Translation (mm)'
@@ -174,7 +203,7 @@
     },
     zoom: {
       enabled: true
-    }
+    },
   });
   
   var chartRot = c3.generate({
@@ -182,7 +211,7 @@
     data: rot,
     axis: {
         x: {
-            label: 'Time (sec)'
+            label: 'Time (TRs)'
         },
         y: {
             label: 'Rotation (degrees))'
@@ -198,7 +227,7 @@
     data: fd,
     axis: {
         x: {
-            label: 'Time (sec)'
+            label: 'Time (TRs)'
         },
         y: {
             label: 'Frame displacement (pseudo mm))'
@@ -212,6 +241,7 @@
       enabled: true
     }
   });
+
   </script>
  
 </body>

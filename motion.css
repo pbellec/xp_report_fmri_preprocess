@@ -1,6 +1,6 @@
 .sliderNext {
   position: absolute;
-  top: 40%;
+  top: 0%;
   right: 2.5%;
   object-fit: none;
   object-position: 0 -150px;
@@ -8,13 +8,20 @@
   height: 150px;
 }
 
+#motionNative {
+  height: 64px;
+  width: 192px;
+  overflow: hidden;
+}
+
+
 .sliderNext:hover{
   object-position: -50px -150px;
 }
 
 .sliderPrev {
   position: absolute;
-  top: 40%;
+  top: 0%;
   left: 2.5%;
   object-fit: none;
   object-position: 0 0;

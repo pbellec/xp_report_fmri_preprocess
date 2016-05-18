@@ -1,12 +1,9 @@
-.stretchy {display:block; float:left; position:relative; overflow:hidden; max-width:576px;}
-.stretchy .spacer {width: 100%; height: auto;}
-.stretchy .sprite {position:absolute; top:0; left:0; max-width:none; width: 28800px;}
-.box {float: left; clear: both; height: 100%; margin: 10px 0; background: #eee;}
+#spriteNative {display: none;}
 
 .sliderNext {
   position: absolute;
   top: 0%;
-  right: 2.5%;
+  right: 0;
   object-fit: none;
   object-position: 0 -150px;
   width: 50px;
@@ -20,7 +17,7 @@
 .sliderPrev {
   position: absolute;
   top: 0%;
-  left: 2.5%;
+  left: 0;
   object-fit: none;
   object-position: 0 0;
   width: 50px;

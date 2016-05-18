@@ -88,12 +88,10 @@
             fMRI time frames in native space
           </div>
           <div class="chart-stage">
-            <a class="stretchy">
-              <img class="spacer" src="spacer.png">
-              <img class="sprite" src="motion_subject1_native.png">
-            </a>
             <img class="sliderNext" src="assets/jsImageSlider/navbuttons2.gif" >
             <img class="sliderPrev" src="assets/jsImageSlider/navbuttons2.gif" >
+            <canvas id="sliderNative" width="582px" heigth="auto"> 
+            <img id="spriteNative" src="motion_subject1_native.png">
           </div>
           <div class="chart-notes">
             Click the left/right arrows to go forward/backward in time.
@@ -150,6 +148,14 @@
   <script src="assets/select2/select2.min.js"></script> <!--from select 2-->
   
   <script> 
+  $( window ).load(function() {
+    var canvas = document.getElementById('sliderNative');
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(document.getElementById('spriteNative'),
+                0, 0, 192, 64, 15, 0, 562, 64*562/192);
+    $('#sliderNative').data("numFrame",0);
+  });
+
   var tsl = {
   columns: [
     ['motion_tx',0.020 ,0.075 ,0.045 ,0.087 ,0.052 ,0.023 ,0.011 ,0.024 ,-0.009 ,-0.049 ,-0.058 ,0.020 ,-0.017 ,0.007 ,-0.012 ,-0.028 ,-0.023 ,-0.040 ,-0.028 ,0.001 ,-0.008 ,0.001 ,0.034 ,0.027 ,0.025 ,0.014 ,0.018 ,0.020 ,0.031 ,0.012 ],
@@ -173,23 +179,36 @@
 ['scrub',0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,1 ,1 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ]
     ]
   };
-      
-  function selectTime(type,tt) {
-    $(".sprite").css("margin-left", tt+"px");
-    };
-
+    
   function nextTime(type) {
-    currOffset = $(".sprite").css("margin-left");
-    nextOffset = Math.max(parseInt(currOffset,10)-576,-49*576);
-    selectTime(type , nextOffset);
+    numFrame = $('#sliderNative').data("numFrame");
+    var canvas = document.getElementById('sliderNative');
+    var ctx = canvas.getContext('2d');
+    nextFrame = Math.min(numFrame+1,50);
+    ctx.drawImage(document.getElementById('spriteNative'),
+                nextFrame*192, 0, 192, 64, 15, 0, 562, 64*562/192);
+    $('#sliderNative').data("numFrame",nextFrame);
     };
 
   function prevTime(type) {
-    currOffset = $(".sprite").css("margin-left");
-    nextOffset = Math.min(parseInt(currOffset,10)+576,0);
-    selectTime(type , nextOffset);
+    numFrame = $('#sliderNative').data("numFrame");
+    var canvas = document.getElementById('sliderNative');
+    var ctx = canvas.getContext('2d');
+    prevFrame = Math.max(numFrame-1,0);
+    ctx.drawImage(document.getElementById('spriteNative'),
+                prevFrame*192, 0, 192, 64, 15, 0, 562, 64*562/192);
+    $('#sliderNative').data("numFrame",prevFrame);
     };
 
+  function reactKey(key){
+    if (key=37) {
+      nextTime("motionNative")
+    } 
+    else if (key=39) {
+      prevTime("motionNative") 
+    };
+  };
+  
   window.onload = function() {
     document.getElementsByClassName("sliderNext")[0].onclick = function fun() {
       nextTime("motionNative");
@@ -198,6 +217,9 @@
       prevTime("motionNative");
       }
     };
+    
+  window.onkeydown = function(e) { reactKey(e.keyCode) 
+      };
 
   var chartTsl = c3.generate({
     bindto: '#chartTsl',

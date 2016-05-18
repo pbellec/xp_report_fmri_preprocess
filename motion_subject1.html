@@ -7,7 +7,6 @@
   <link rel="stylesheet" type="text/css" href="motion.css" /> <!--from keen.io-->
   <link rel="stylesheet" type="text/css" href="assets/bootstrap/bootstrap.min.css" /> <!--from keen.io-->
   <link rel="stylesheet" type="text/css" href="assets/keen/keen-dashboards.css" />    <!--from keen.io-->
-  <link rel="stylesheet" type="text/css" href="assets/pretty-json/pretty-json.css" /> <!--from pretty-json-->
   <link href="assets/select2/select2.min.css" rel="stylesheet" /> <!--from select 2-->
   <link href="assets/c3js/c3.min.css" rel="stylesheet" type="text/css"> <!--from c3.js-->
 </head>
@@ -148,7 +147,6 @@
   <script type="text/javascript" src="assets/jquery/jquery.min.js"></script>       <!--from keen.io-->
   <script type="text/javascript" src="assets/bootstrap/bootstrap.min.js"></script> <!--from keen.io-->
   <script type="text/javascript" src="assets/keen/keen.min.js"></script>           <!--from keen.io-->
-  <script type="text/javascript" src="assets/keen/meta.js"></script>               <!--from keen.io-->
   <script src="assets/select2/select2.min.js"></script> <!--from select 2-->
   
   <script> 
@@ -177,18 +175,18 @@
   };
       
   function selectTime(type,tt) {
-    $(".sprite").css("margin-top", tt+"px");
+    $(".sprite").css("margin-left", tt+"px");
     };
 
   function nextTime(type) {
-    currOffset = $(".sprite").css("margin-top");
-    nextOffset = Math.max(parseInt(currOffset,10)-64,-3200+64);
+    currOffset = $(".sprite").css("margin-left");
+    nextOffset = Math.max(parseInt(currOffset,10)-576,-49*576);
     selectTime(type , nextOffset);
     };
 
   function prevTime(type) {
-    currOffset = $(".sprite").css("margin-top");
-    nextOffset = Math.min(parseInt(currOffset,10)+64,0);
+    currOffset = $(".sprite").css("margin-left");
+    nextOffset = Math.min(parseInt(currOffset,10)+576,0);
     selectTime(type , nextOffset);
     };
 

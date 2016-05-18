@@ -36,6 +36,7 @@
 
   <div class="container-fluid">
 
+<!-- Translation plots -->
     <div class="row">
       <div class="col-sm-6 col-md-4">
         <div class="chart-wrapper">
@@ -50,6 +51,8 @@
           </div>
         </div>
       </div>
+      
+<!-- Rotation plots -->
       <div class="col-sm-6 col-md-4">
         <div class="chart-wrapper">
           <div class="chart-title">
@@ -63,6 +66,8 @@
           </div>
         </div>
       </div>
+      
+<!-- FD plots -->
       <div class="col-sm-6 col-md-4">
         <div class="chart-wrapper">
           <div class="chart-title">
@@ -76,16 +81,18 @@
           </div>
         </div>
       </div>
-<!-- end of three -->
+      
+<!-- Motion visualizer in native space -->
       <div class="col-sm-6 col-md-4">
         <div class="chart-wrapper">
           <div class="chart-title">
             fMRI time frames in native space
           </div>
           <div class="chart-stage">
-            <div id="motionNative">
-              <img src="motion_subject1_native.png" width="192" height="3200">
-            </div>
+            <a class="stretchy">
+              <img class="spacer" src="spacer.png">
+              <img class="sprite" src="motion_subject1_native.png">
+            </a>
             <img class="sliderNext" src="assets/jsImageSlider/navbuttons2.gif" >
             <img class="sliderPrev" src="assets/jsImageSlider/navbuttons2.gif" >
           </div>
@@ -94,6 +101,8 @@
           </div>
         </div>
       </div>
+      
+<!-- Motion visualizer in stereotaxic space -->
       <div class="col-sm-6 col-md-4">
         <div class="chart-wrapper">
           <div class="chart-title">
@@ -107,6 +116,8 @@
           </div>
         </div>
       </div>
+      
+<!-- Registration with the session/run of reference -->      
       <div class="col-sm-6 col-md-4">
         <div class="chart-wrapper">
           <div class="chart-title">
@@ -166,17 +177,17 @@
   };
       
   function selectTime(type,tt) {
-    $("#"+type+" img").css("margin-top", tt+"px");
+    $(".sprite").css("margin-top", tt+"px");
     };
 
   function nextTime(type) {
-    currOffset = $("#"+type+" img").css("margin-top");
+    currOffset = $(".sprite").css("margin-top");
     nextOffset = Math.max(parseInt(currOffset,10)-64,-3200+64);
     selectTime(type , nextOffset);
     };
 
   function prevTime(type) {
-    currOffset = $("#"+type+" img").css("margin-top");
+    currOffset = $(".sprite").css("margin-top");
     nextOffset = Math.min(parseInt(currOffset,10)+64,0);
     selectTime(type , nextOffset);
     };

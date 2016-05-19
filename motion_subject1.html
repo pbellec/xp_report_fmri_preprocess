@@ -148,21 +148,16 @@
   <script src="assets/select2/select2.min.js"></script> <!--from select 2-->
   
   <script> 
-  $( window ).load(function() {
-    var canvas = document.getElementById('sliderNative');
-    var ctx = canvas.getContext('2d');
-    ctx.drawImage(document.getElementById('spriteNative'),
-                0, 0, 192, 64, 15, 0, 562, 64*562/192);
-    $('#sliderNative').data("numFrame",0);
-  });
-
   var tsl = {
   columns: [
     ['motion_tx',0.020 ,0.075 ,0.045 ,0.087 ,0.052 ,0.023 ,0.011 ,0.024 ,-0.009 ,-0.049 ,-0.058 ,0.020 ,-0.017 ,0.007 ,-0.012 ,-0.028 ,-0.023 ,-0.040 ,-0.028 ,0.001 ,-0.008 ,0.001 ,0.034 ,0.027 ,0.025 ,0.014 ,0.018 ,0.020 ,0.031 ,0.012 ],
 ['motion_ty',-0.012 ,-0.012 ,0.017 ,-0.003 ,-0.006 ,-0.028 ,-0.001 ,-0.016 ,0.003 ,0.001 ,0.022 ,-0.007 ,0.045 ,-0.008 ,-0.073 ,-0.037 ,-0.020 ,0.022 ,0.014 ,-0.012 ,-0.021 ,-0.047 ,-0.003 ,-0.039 ,-0.049 ,0.004 ,-0.017 ,0.017 ,-0.011 ,0.000 ],
 ['motion_tz',-0.266 ,-0.126 ,-0.106 ,-0.093 ,0.009 ,-0.038 ,-0.002 ,-0.006 ,0.005 ,0.061 ,0.007 ,-0.184 ,-0.001 ,0.028 ,0.091 ,0.109 ,0.122 ,0.108 ,0.095 ,0.063 ,0.054 ,0.005 ,-0.136 ,0.011 ,0.006 ,-0.015 ,-0.008 ,0.064 ,0.075 ,0.066 ]
     ],
-    onclick: function (d) { selectTime("motionNative",-d.index*64);}
+  selection: {
+    enabled: true
+    },
+  onclick: function (d) { selectTime(d.index);}
   };
   
   var rot = {
@@ -170,57 +165,27 @@
     ['motion_rx',-0.340 ,-0.114 ,-0.091 ,-0.132 ,-0.137 ,-0.127 ,-0.069 ,-0.034 ,-0.043 ,-0.013 ,-0.060 ,-0.174 ,0.003 ,-0.009 ,0.044 ,0.083 ,0.090 ,0.108 ,0.098 ,0.070 ,0.082 ,0.011 ,-0.131 ,0.049 ,0.020 ,0.050 ,0.038 ,0.107 ,0.093 ,0.084 ],
 ['motion_ry',0.070 ,0.001 ,0.048 ,0.034 ,0.036 ,0.035 ,0.016 ,-0.029 ,-0.012 ,-0.037 ,-0.020 ,0.027 ,0.033 ,-0.095 ,-0.137 ,-0.036 ,0.030 ,-0.003 ,-0.010 ,0.012 ,-0.027 ,-0.018 ,0.018 ,-0.038 ,-0.040 ,-0.019 ,-0.041 ,-0.036 ,-0.015 ,-0.007 ],
 ['motion_rz',-0.034 ,-0.044 ,-0.004 ,-0.053 ,-0.037 ,-0.011 ,0.001 ,-0.017 ,0.027 ,0.026 ,0.055 ,-0.016 ,0.032 ,-0.019 ,-0.046 ,0.029 ,0.017 ,0.024 ,0.024 ,-0.012 ,-0.010 ,-0.011 ,-0.045 ,-0.019 ,-0.047 ,-0.056 ,-0.059 ,-0.037 ,-0.011 ,-0.053 ]
-    ]
+    ],
+  selection: {
+    enabled: true
+    },
+  onclick: function (d) { selectTime(d.index);}
   };
 
   var fd = {
   columns: [
     ['FD',0.462 ,0.176 ,0.166 ,0.159 ,0.131 ,0.152 ,0.119 ,0.127 ,0.146 ,0.166 ,0.504 ,0.477 ,0.277 ,0.255 ,0.258 ,0.110 ,0.124 ,0.048 ,0.166 ,0.074 ,0.153 ,0.405 ,0.420 ,0.068 ,0.139 ,0.065 ,0.192 ,0.105 ,0.092 ,0 ],
 ['scrub',0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,1 ,1 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ]
-    ]
+    ],
+  selection: {
+    enabled: true
+    },
+  onclick: function (d) { selectTime(d.index);}
   };
     
-  function nextTime(type) {
-    numFrame = $('#sliderNative').data("numFrame");
-    var canvas = document.getElementById('sliderNative');
-    var ctx = canvas.getContext('2d');
-    nextFrame = Math.min(numFrame+1,50);
-    ctx.drawImage(document.getElementById('spriteNative'),
-                nextFrame*192, 0, 192, 64, 15, 0, 562, 64*562/192);
-    $('#sliderNative').data("numFrame",nextFrame);
-    };
+  $( window ).load(function() {selectTime(0)});
 
-  function prevTime(type) {
-    numFrame = $('#sliderNative').data("numFrame");
-    var canvas = document.getElementById('sliderNative');
-    var ctx = canvas.getContext('2d');
-    prevFrame = Math.max(numFrame-1,0);
-    ctx.drawImage(document.getElementById('spriteNative'),
-                prevFrame*192, 0, 192, 64, 15, 0, 562, 64*562/192);
-    $('#sliderNative').data("numFrame",prevFrame);
-    };
-
-  function reactKey(key){
-    if (key=37) {
-      nextTime("motionNative")
-    } 
-    else if (key=39) {
-      prevTime("motionNative") 
-    };
-  };
   
-  window.onload = function() {
-    document.getElementsByClassName("sliderNext")[0].onclick = function fun() {
-      nextTime("motionNative");
-      }
-    document.getElementsByClassName("sliderPrev")[0].onclick = function fun() {
-      prevTime("motionNative");
-      }
-    };
-    
-  window.onkeydown = function(e) { reactKey(e.keyCode) 
-      };
-
   var chartTsl = c3.generate({
     bindto: '#chartTsl',
     data: tsl,
@@ -253,7 +218,7 @@
     }
   });
   
-  var chartRot = c3.generate({
+  var chartFd = c3.generate({
     bindto: '#chartFd',
     data: fd,
     axis: {
@@ -272,6 +237,53 @@
       enabled: true
     }
   });
+  
+  function selectTime(frame) {
+    var canvas = document.getElementById('sliderNative');
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(document.getElementById('spriteNative'),
+                frame*192, 0, 192, 64, 15, 0, 562, 64*562/192);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText("Frame number "+frame+"/49",20,10);
+    $('#sliderNative').data("numFrame",frame);
+    chartTsl.select(['motion_tx' , 'motion_ty' , 'motion_tz'], [frame], true);
+    chartRot.select(['motion_rx' , 'motion_ry' , 'motion_rz'], [frame], true);
+    chartFd.select(['FD' , 'scrub' ], [frame], true);
+    };
+    
+  function nextTime() {
+    numFrame = $('#sliderNative').data("numFrame");
+    nextFrame = numFrame+1;
+    if (nextFrame>49){return} else {selectTime(nextFrame)};
+    };
+
+  function prevTime() {
+    numFrame = $('#sliderNative').data("numFrame");
+    prevFrame = numFrame - 1;
+    if (prevFrame<0){return} else {selectTime(prevFrame)};
+    };
+
+  function reactKey(key){
+    if (key==39) {
+      nextTime()
+    } 
+    else if (key==37) {
+      prevTime() 
+    };
+  };
+  
+  window.onload = function() {
+    document.getElementsByClassName("sliderNext")[0].onclick = function fun() {
+      nextTime();
+      }
+    document.getElementsByClassName("sliderPrev")[0].onclick = function fun() {
+      prevTime();
+      }
+    };
+    
+  window.onkeydown = function(e) { reactKey(e.keyCode) 
+      };
+
 
   </script>
  

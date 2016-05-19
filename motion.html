@@ -148,74 +148,39 @@
   <script src="assets/select2/select2.min.js"></script> <!--from select 2-->
   
   <script> 
-  $( window ).load(function() {
-    var canvas = document.getElementById('sliderNative');
-    var ctx = canvas.getContext('2d');
-    ctx.drawImage(document.getElementById('spriteNative'),
-                0, 0, 192, 64, 15, 0, 562, 64*562/192);
-    $('#sliderNative').data("numFrame",0);
-  });
-
   var tsl = {
   columns: [
     $TSL
     ],
-    onclick: function (d) { selectTime("motionNative",-d.index*64);}
+  selection: {
+    enabled: true
+    },
+  onclick: function (d) { selectTime(d.index);}
   };
   
   var rot = {
   columns: [
     $ROT
-    ]
+    ],
+  selection: {
+    enabled: true
+    },
+  onclick: function (d) { selectTime(d.index);}
   };
 
   var fd = {
   columns: [
     $FD
-    ]
+    ],
+  selection: {
+    enabled: true
+    },
+  onclick: function (d) { selectTime(d.index);}
   };
     
-  function nextTime(type) {
-    numFrame = $('#sliderNative').data("numFrame");
-    var canvas = document.getElementById('sliderNative');
-    var ctx = canvas.getContext('2d');
-    nextFrame = Math.min(numFrame+1,50);
-    ctx.drawImage(document.getElementById('spriteNative'),
-                nextFrame*192, 0, 192, 64, 15, 0, 562, 64*562/192);
-    $('#sliderNative').data("numFrame",nextFrame);
-    };
+  $( window ).load(function() {selectTime(0)});
 
-  function prevTime(type) {
-    numFrame = $('#sliderNative').data("numFrame");
-    var canvas = document.getElementById('sliderNative');
-    var ctx = canvas.getContext('2d');
-    prevFrame = Math.max(numFrame-1,0);
-    ctx.drawImage(document.getElementById('spriteNative'),
-                prevFrame*192, 0, 192, 64, 15, 0, 562, 64*562/192);
-    $('#sliderNative').data("numFrame",prevFrame);
-    };
-
-  function reactKey(key){
-    if (key=37) {
-      nextTime("motionNative")
-    } 
-    else if (key=39) {
-      prevTime("motionNative") 
-    };
-  };
   
-  window.onload = function() {
-    document.getElementsByClassName("sliderNext")[0].onclick = function fun() {
-      nextTime("motionNative");
-      }
-    document.getElementsByClassName("sliderPrev")[0].onclick = function fun() {
-      prevTime("motionNative");
-      }
-    };
-    
-  window.onkeydown = function(e) { reactKey(e.keyCode) 
-      };
-
   var chartTsl = c3.generate({
     bindto: '#chartTsl',
     data: tsl,
@@ -248,7 +213,7 @@
     }
   });
   
-  var chartRot = c3.generate({
+  var chartFd = c3.generate({
     bindto: '#chartFd',
     data: fd,
     axis: {
@@ -267,6 +232,53 @@
       enabled: true
     }
   });
+  
+  function selectTime(frame) {
+    var canvas = document.getElementById('sliderNative');
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(document.getElementById('spriteNative'),
+                frame*192, 0, 192, 64, 15, 0, 562, 64*562/192);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText("Frame number "+frame+"/49",20,10);
+    $('#sliderNative').data("numFrame",frame);
+    chartTsl.select(['motion_tx' , 'motion_ty' , 'motion_tz'], [frame], true);
+    chartRot.select(['motion_rx' , 'motion_ry' , 'motion_rz'], [frame], true);
+    chartFd.select(['FD' , 'scrub' ], [frame], true);
+    };
+    
+  function nextTime() {
+    numFrame = $('#sliderNative').data("numFrame");
+    nextFrame = numFrame+1;
+    if (nextFrame>49){return} else {selectTime(nextFrame)};
+    };
+
+  function prevTime() {
+    numFrame = $('#sliderNative').data("numFrame");
+    prevFrame = numFrame - 1;
+    if (prevFrame<0){return} else {selectTime(prevFrame)};
+    };
+
+  function reactKey(key){
+    if (key==39) {
+      nextTime()
+    } 
+    else if (key==37) {
+      prevTime() 
+    };
+  };
+  
+  window.onload = function() {
+    document.getElementsByClassName("sliderNext")[0].onclick = function fun() {
+      nextTime();
+      }
+    document.getElementsByClassName("sliderPrev")[0].onclick = function fun() {
+      prevTime();
+      }
+    };
+    
+  window.onkeydown = function(e) { reactKey(e.keyCode) 
+      };
+
 
   </script>
  

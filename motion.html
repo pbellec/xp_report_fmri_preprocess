@@ -25,7 +25,7 @@
       </div>
       <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav navbar-left">
-          <li><a href="summary.html">Summary</a></li>
+          <li><a href="index.html">Summary</a></li>
           <li><a href="registration.html">Registration</a></li>
           <li><a href="motion.html">Motion</a></li>
         </ul>
@@ -56,7 +56,7 @@
           <div class="chart-title">
             fMRI time frames in native space
           </div>
-          <div class="chart-stage">
+          <div class="chart-stage" id="motionNative">
             <img class="sliderNext" src="assets/jsImageSlider/navbuttons2.gif" >
             <img class="sliderPrev" src="assets/jsImageSlider/navbuttons2.gif" >
             <canvas id="sliderNative" width="1300px" height="400px"> 
@@ -243,10 +243,11 @@
   function selectTime(frame) {
     var canvas = document.getElementById('sliderNative');
     var ctx = canvas.getContext('2d');
+    var wNative = $("#sliderNative").parent().width();
     ctx.drawImage(document.getElementById('spriteNative'),
-                frame*192, 0, 192, 64, 60, 0, 1200, 400);
+                frame*192, 0, 192, 64, wNative*0.05, 0, wNative*0.9, 400);
     ctx.fillStyle = "#ffffff";
-    ctx.fillText("Frame number "+frame+"/49",20,10);
+    ctx.fillText("Frame number "+frame+"/49",wNative*0.07,10);
     $('#sliderNative').data("numFrame",frame);
     chartTsl.select(['motion_tx' , 'motion_ty' , 'motion_tz'], [frame], true);
     chartRot.select(['motion_rx' , 'motion_ry' , 'motion_rz'], [frame], true);

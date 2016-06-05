@@ -90,7 +90,7 @@
             <img class="sliderPrev" src="assets/jsImageSlider/navbuttons2.gif" >
           </div>
           <div class="chart-notes">
-            Hover the mouse over to switch between images.
+            Hover the mouse over to switch between images. Click or press left/right arrows for prev/next subject. 
           </div>
         </div>
       </div>
@@ -109,7 +109,7 @@
             <img class="sliderPrev" src="assets/jsImageSlider/navbuttons2.gif" >
            </div>
           <div class="chart-notes">
-            Hover the mouse over to switch between images.
+            Hover the mouse over to switch between images. Click or press left/right arrows for prev/next subject.
           </div>
         </div>
       </div>
@@ -222,6 +222,19 @@
         prevSubject();
       }
   }
+  
+  <!--Changing subjects with left and right arrows (prev and next, resp)-->  
+  function reactKey(key){
+    if (key==39) {
+      nextSubject()
+    } 
+    else if (key==37) {
+      prevSubject() 
+    };
+  };
+  
+  window.onkeydown = function(e) { reactKey(e.keyCode) 
+      };
   
   <!--Function to parse the page parameters-->  
   function getParameterByName(name, url) {

@@ -47,9 +47,7 @@
   <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
   <link rel="stylesheet" type="text/css" href="assets/bootstrap/bootstrap.min.css" /> <!--from keen.io-->
   <link rel="stylesheet" type="text/css" href="assets/keen/keen-dashboards.css" />    <!--from keen.io-->
-  <link rel="stylesheet" type="text/css" href="assets/pretty-json/pretty-json.css" /> <!--from pretty-json-->
   <link href="assets/select2/select2.min.css" rel="stylesheet" /> <!--from select 2-->
-  <link href="assets/c3js/c3.min.css" rel="stylesheet" type="text/css"> <!--from c3.js-->
 </head>
 
 <body class="application">
@@ -82,10 +80,7 @@
         <div class="chart-wrapper">
           <div class="chart-title">
             Individual vs template T1 scan for subject
-            <select class="select-subject" style="width: 50%">
-              <option value="1">X0010001</option>
-              <option value="2">X0010002</option>
-            </select>
+            <select class="select-subject" style="width: 50%"></select>
           </div>
           <div class="chart-stage">
             <div id="T1-indVsTemplate" class="register">
@@ -103,10 +98,7 @@
     	<div class="chart-wrapper">
       	<div class="chart-title">
             BOLD vs T1 scan for subject  
-            <select id="select-BOLD" class="select-subject" style="width: 50%">
-              <option value="1">X0010001</option>
-              <option value="2">X0010002</option>
-            </select>
+            <select id="select-BOLD" class="select-subject" style="width: 50%"></select>
          </div>
          <div class="chart-stage">
            <div class="chart-stage">
@@ -131,92 +123,52 @@
   </div>
 
   <!--Dependencies-->
-  <script src="assets/d3js/d3.min.js" charset="utf-8"></script>
-  <script src="assets/c3js/c3.min.js"></script></head>
   <script type="text/javascript" src="assets/jquery/jquery.min.js"></script>       <!--from keen.io-->
   <script type="text/javascript" src="assets/bootstrap/bootstrap.min.js"></script> <!--from keen.io-->
   <script type="text/javascript" src="assets/keen/keen.min.js"></script>           <!--from keen.io-->
   <script type="text/javascript" src="assets/keen/meta.js"></script>               <!--from keen.io-->
-  <script type="text/javascript" src="assets/underscore/underscore-min.js"></script>   <!--from pretty-json-->
-  <script type="text/javascript" src="assets/backbone/backbone-min.js"></script>       <!--from pretty-json-->
-  <script type="text/javascript" src="assets/pretty-json/pretty-json-min.js"></script> <!--from pretty-json-->
   <script src="assets/select2/select2.min.js"></script> <!--from select 2-->
   
-  <!--Custom script to add a subject selection-->
   <script>
   $(document).ready(function() {
   
-    var chart = c3.generate({
-    bindto: '#chart-T1',
-        data: {
-        x: 'Subject',
-        columns: [
-            ['Subject','X0010001', 'X0010002'],
-            ['corr_target',0.67,0.82]
-        ],
-        type: 'bar',
-        onclick: function (d) { selectSubject(d,'chart-T1')}
-    },
-    axis: {
-        x: {
-            type: 'category',
-            }
-        },
-    zoom: {
-        enabled: true
-    },
-    selection: {
-        enabled: true
-    }
-  });
-  $('#chart-T1').data('c3-chart', chart);
+  <!-- List of subjects -->
+  var data = [{ id: 1, text: 'X0010001' }, { id: 2, text: 'X0010002' }];
   
-  var chart2 = c3.generate({
-    bindto: '#chart-BOLD',
-    data: {
-      columns: [
-        ['corr_target',0.53,0.62]
-      ],
-      type: 'bar',
-      onclick: function (d) { selectSubject(d,'chart-BOLD')}
-    },
-    axis: {
-        x: {
-            type: 'category',
-            categories: ['X0010002', 'X0010001']
-            }
-        },
-    zoom: {
-        enabled: true
-    },
-    selection: {
-        enabled: true
-    }
-  });
-  $('#chart-BOLD').data('c3-chart', chart2);
-  
-  $(".select-subject").select2();  
-    
+  <!--Add a subject selection-->
+  $(".select-subject").select2({
+  data: data
+  });  
   var $eventSelect = $(".select-subject");
-  
   $eventSelect.on("select2:select", function (e) { setImg(e); })
   
+  <!--Update images-->
   function setImg (evt) {
+  
+    <!--Get subject index and ID-->
     var id = evt.params.data.id;
     subject = $("#select-BOLD option[value=" + id + "]").text();
+    
+    <!--Update the selection of the subject button-->
     $es = $(".select-subject");
     $es.val(id);
     $es.trigger('change');
+    
+    <!--Grab the T1 and BOLD div, and build new empty figures-->
     var figBOLD = $(".BOLD");
     var newFigBOLD = document.createElement("img");
     var figT1 = $(".T1");
     var newFigT1 = document.createElement("img");
+    
+    <!--Populate figures-->    
     newFigBOLD.src = "summary_" + subject + "_func.jpg";
     newFigBOLD.setAttribute("width", "100%");
     newFigBOLD.className = "BOLD";
     newFigT1.src = "summary_" + subject + "_anat.jpg";
     newFigT1.setAttribute("width", "100%");
     newFigT1.className = "T1";
+
+    <!--Update figures-->        
     figBOLD.replaceWith(newFigBOLD);
     figT1.replaceWith(newFigT1);
     figBoldVsT1 = $("#boldVsT1");
@@ -225,17 +177,9 @@
     figT1vsTemplate = $("#T1-indVsTemplate");
     figT1vsTemplate.css("backgroundImage","url(summary_template.jpg)");
     figT1vsTemplate.css("backgroundSize","100%");
-    }  
+  }  
   
-  function selectSubject (d,type) {
-    charti = $('#' + type).data('c3-chart');
-    subject = charti.internal.config.axis_x_categories[d.x];
-    id = $("#select-BOLD > option:contains("+subject+")").index();
-    id = parseInt(id)+1;
-    evtSelect = {params:{data:{id:id.toString()}}};
-    setImg (evtSelect);
-    }
-    
+  <!--Move on to the next subject-->
   function nextSubject () {
     $es = $(".select-subject");
     currId = $es.val();
@@ -247,8 +191,9 @@
     }
     var evt = {params:{data:{id:currId.toString()}}};
     setImg (evt);
-    }
+  }
     
+  <!--Move back to the previous subject-->
   function prevSubject () {
     $es = $(".select-subject");
     currId = $es.val();
@@ -260,8 +205,9 @@
     }
     var evt = {params:{data:{id:currId.toString()}}};
     setImg (evt);
-    }
-    
+  }
+  
+  <!--Attach events to clicks on the prev/next buttons-->  
   window.onload = function() {
     document.getElementsByClassName("sliderNext")[0].onclick = function fun() {
         nextSubject();
@@ -275,8 +221,9 @@
     document.getElementsByClassName("sliderPrev")[1].onclick = function fun() {
         prevSubject();
       }
-}
+  }
   
+  <!--Function to parse the page parameters-->  
   function getParameterByName(name, url) {
     if (!url) url = window.location.href;
     name = name.replace(/[\[\]]/g, "\\$&");
@@ -286,12 +233,25 @@
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, " "));
   }
-  
+
+  <!--Find subject ID-->
+  function findID(data,subject){
+    for (ii=0 ; ii<data.length; ii++) {
+      if (data[ii].text===subject) {
+        id = data[ii].id;
+        return id      
+      }      
+    } 
+  }
+  <!--Read page parameters and update accordingly-->    
   var subject = getParameterByName('id');
   if (!subject) {
     var subject = "X0010001";
-    var id = "1";
     };
+  id = findID(data,subject);
+  if (!id) {
+    id = "1";  
+  } 
   
   var evt = {params:{data:{id:id}}};
   setImg (evt); 

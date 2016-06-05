@@ -2,7 +2,7 @@
 
 .sliderNext {
   position: absolute;
-  top: 0%;
+  top: 30%;
   right: 0;
   object-fit: none;
   object-position: 0 -150px;
@@ -16,7 +16,7 @@
 
 .sliderPrev {
   position: absolute;
-  top: 0%;
+  top: 30%;
   left: 0;
   object-fit: none;
   object-position: 0 0;

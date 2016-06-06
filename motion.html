@@ -4,7 +4,7 @@
 <head>
   <title>Report on fMRI motion levels</title>
   <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
-  <link rel="stylesheet" type="text/css" href="motion.css" /> <!--from keen.io-->
+  <link rel="stylesheet" type="text/css" href="motion.css" /> <!--Custom style sheet for motion report-->
   <link rel="stylesheet" type="text/css" href="assets/bootstrap/bootstrap.min.css" /> <!--from keen.io-->
   <link rel="stylesheet" type="text/css" href="assets/keen/keen-dashboards.css" />    <!--from keen.io-->
   <link href="assets/select2/select2.min.css" rel="stylesheet" /> <!--from select 2-->
@@ -60,7 +60,7 @@
             <img class="sliderNext" src="assets/jsImageSlider/navbuttons2.gif" >
             <img class="sliderPrev" src="assets/jsImageSlider/navbuttons2.gif" >
             <canvas id="sliderNative"> 
-            <img id="spriteNative" class="hidden" src="motion_subject1_native.png">
+            <img id="spriteNative" class="hidden" src="motion/motion_subject1_native.png">
           </div>
           <div class="chart-notes">
             Click the left/right arrows to go forward/backward in time.
@@ -95,7 +95,7 @@
             <img class="sliderNext" src="assets/jsImageSlider/navbuttons2.gif" >
             <img class="sliderPrev" src="assets/jsImageSlider/navbuttons2.gif" >
             <canvas id="sliderStereo"> 
-            <img id="spriteStereo" class="hidden" src="motion_subject1_stereo.png">
+            <img id="spriteStereo" class="hidden" src="motion/motion_subject1_stereo.png">
           </div>
           <div class="chart-notes">
             Click the left/right arrows to go forward/backward in time.
@@ -124,13 +124,15 @@
       <div class="col-sm-9">
         <div class="chart-wrapper">
           <div class="chart-title">
-            Cell Title
+            Run vs Reference volume (session1_run1)
           </div>
           <div class="chart-stage">
-            <img data-src="holder.js/100%x180/white">
+            <div id="divRegistration" class="register">
+            <img id="registration" src="motion/ref_volume.jpg" style="display:block; margin-left:auto; margin-right:auto">
+            </div>
           </div>
           <div class="chart-notes">
-            Notes about this chart
+            Hover the mouse over to switch between images. 
           </div>
         </div>
       </div>
@@ -155,11 +157,23 @@
   
   <script> 
   var numFrame = 0;
+  var percVisu = 0.7;
   var spacerNative = new Image();
-  spacerNative.src = "spacer.png";
+  spacerNative.src = "motion/spacer.png";
   var spacerStereo = new Image();
-  spacerStereo.src = "spacer_stereo.png";
-  $( window ).load(function() {selectTime(numFrame)});
+  spacerStereo.src = "motion/spacer_stereo.png";
+  var percVisuStr = 100*percVisu;
+  percVisuStr = percVisuStr.toString()+"%";
+  $( window ).load(function() {
+    selectTime(numFrame);
+    $("#registration").width(percVisuStr);
+    figRegistration = $("#divRegistration");
+    figRegistration.css("backgroundImage","url('motion/median_volume.jpg')");
+    figRegistration.css("backgroundSize",percVisuStr);
+    figRegistration.css("backgroundPosition","center");
+    figRegistration.css("backgroundRepeat","no-repeat");
+  });
+  window.addEventListener("resize", function() {selectTime(numFrame);});
     
   var tsl = {
   columns: [
@@ -261,7 +275,6 @@
   });
   
   function drawMotion(frame,type) {
-    var perc_visu = 0.7;
     var canvas = document.getElementById("slider" + type);
     var wImg = $("#slider"+type).parent().width();    
     if (type==="Native") {
@@ -272,16 +285,16 @@
       var hSpacer = spacerStereo.height; 
     };
     var rSpacer = hSpacer / wSpacer ;
-    var hImg = Math.round(wImg * perc_visu * rSpacer);
+    var hImg = Math.round(wImg * percVisu * rSpacer);
     if (canvas.width!=wImg) {   
       canvas.width = wImg;
       canvas.height = hImg;
     };    
     var ctx = canvas.getContext('2d');
     ctx.drawImage(document.getElementById("sprite"+type),
-                frame*wSpacer, 0, wSpacer, hSpacer, wImg*(1-perc_visu)/2, 0, wImg*perc_visu, hImg );
+                frame*wSpacer, 0, wSpacer, hSpacer, wImg*(1-percVisu)/2, 0, wImg*percVisu, hImg );
     ctx.fillStyle = "#ffffff";
-    ctx.fillText("Frame number "+frame+"/49",wImg*0.07,10);
+    ctx.fillText("Frame number "+frame+"/49",wImg*1.2*(1-percVisu)/2,0.05*hImg);
     numFrame = frame;
     return hImg
     };

@@ -77,7 +77,7 @@
             Translation parameters
           </div>
           <div class="chart-stage">
-            <div id="chartTsl" style="height:400px"></div>
+            <div id="chartTsl"></div>
           </div>
           <div class="chart-notes">
             Click to select a time point. Mouse scroll to zoom.
@@ -173,7 +173,7 @@
     figRegistration.css("backgroundPosition","center");
     figRegistration.css("backgroundRepeat","no-repeat");
   });
-  window.addEventListener("resize", function() {selectTime(numFrame);});
+  window.addEventListener("resize", function() {selectTime(numFrame);}); 
     
   var tsl = {
   columns: [
@@ -302,13 +302,11 @@
   function selectTime(frame) {
     hImgNative = drawMotion(frame,"Native");
     if ($("#chartFd").height()!=hImgNative) {
-      $("#chartFd").height(hImgNative);
-      chartFd.resize();
+      chartFd.resize({height:hImgNative});
     };
     hImgStereo = drawMotion(frame,"Stereo");
     if ($("#chartTsl").height()!=hImgStereo) {
-      $("#chartTsl").height(hImgStereo);
-      chartTsl.resize();
+      chartTsl.resize({height:hImgStereo});
     };
     chartTsl.select(['motion_tx' , 'motion_ty' , 'motion_tz'], [frame], true);
     chartRot.select(['motion_rx' , 'motion_ry' , 'motion_rz'], [frame], true);

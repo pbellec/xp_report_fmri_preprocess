@@ -172,8 +172,12 @@
     figRegistration.css("backgroundSize",percVisuStr);
     figRegistration.css("backgroundPosition","center");
     figRegistration.css("backgroundRepeat","no-repeat");
+    chartRot.resize({height:$("#registration").height()});
   });
-  window.addEventListener("resize", function() {selectTime(numFrame);}); 
+  window.addEventListener("resize", function() {
+    selectTime(numFrame); 
+    chartRot.resize({height:$("#registration").height()});
+    }); 
     
   var tsl = {
   columns: [

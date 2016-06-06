@@ -42,7 +42,7 @@
             Frame displacement
           </div>
           <div class="chart-stage">
-            <div id="chartFd" style="height:400px"></div>
+            <div id="chartFd"></div>
           </div>
           <div class="chart-notes">
             Click to select a time point. Mouse scroll to zoom.
@@ -59,8 +59,8 @@
           <div class="chart-stage" id="motionNative">
             <img class="sliderNext" src="assets/jsImageSlider/navbuttons2.gif" >
             <img class="sliderPrev" src="assets/jsImageSlider/navbuttons2.gif" >
-            <canvas id="sliderNative" width="1300px" height="400px"> 
-            <img id="spriteNative" src="motion_subject1_native.png">
+            <canvas id="sliderNative"> 
+            <img id="spriteNative" class="hidden" src="motion_subject1_native.png">
           </div>
           <div class="chart-notes">
             Click the left/right arrows to go forward/backward in time.
@@ -69,37 +69,6 @@
       </div>
 <!-- end of two -->
       
-<!-- Rotation plots -->      
-      <div class="col-sm-3">
-        <div class="chart-wrapper">
-          <div class="chart-title">
-            Rotation parameters
-          </div>
-          <div class="chart-stage">
-            <div id="chartRot" style="width:100%"></div>
-          </div>
-          <div class="chart-notes">
-            Click to select a time point. Mouse scroll to zoom.
-          </div>
-        </div>
-      </div>
-
-<!-- Motion visualizer in stereotaxic space -->
-      <div class="col-sm-9">
-        <div class="chart-wrapper">
-          <div class="chart-title">
-            Cell Title
-          </div>
-          <div class="chart-stage">
-            <img data-src="holder.js/100%x180/white">
-          </div>
-          <div class="chart-notes">
-            Notes about this chart
-          </div>
-        </div>
-      </div>
-<!-- end of two -->
- 
 <!-- Translation plots -->
     <div class="row">
       <div class="col-sm-3">
@@ -109,6 +78,41 @@
           </div>
           <div class="chart-stage">
             <div id="chartTsl" style="height:400px"></div>
+          </div>
+          <div class="chart-notes">
+            Click to select a time point. Mouse scroll to zoom.
+          </div>
+        </div>
+      </div>
+
+<!-- Motion visualizer in native space -->
+      <div class="col-sm-9">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            fMRI time frames in stereotaxic space
+          </div>
+          <div class="chart-stage" id="motionNative">
+            <img class="sliderNext" src="assets/jsImageSlider/navbuttons2.gif" >
+            <img class="sliderPrev" src="assets/jsImageSlider/navbuttons2.gif" >
+            <canvas id="sliderStereo"> 
+            <img id="spriteStereo" class="hidden" src="motion_subject1_stereo.png">
+          </div>
+          <div class="chart-notes">
+            Click the left/right arrows to go forward/backward in time.
+          </div>
+        </div>
+      </div>
+      
+<!-- end of two -->
+ 
+<!-- Rotation plots -->      
+      <div class="col-sm-3">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Rotation parameters
+          </div>
+          <div class="chart-stage">
+            <div id="chartRot" style="width:100%"></div>
           </div>
           <div class="chart-notes">
             Click to select a time point. Mouse scroll to zoom.
@@ -150,6 +154,13 @@
   <script src="assets/select2/select2.min.js"></script> <!--from select 2-->
   
   <script> 
+  var numFrame = 0;
+  var spacerNative = new Image();
+  spacerNative.src = "spacer.png";
+  var spacerStereo = new Image();
+  spacerStereo.src = "spacer_stereo.png";
+  $( window ).load(function() {selectTime(numFrame)});
+    
   var tsl = {
   columns: [
     ['motion_tx',0.020 ,0.075 ,0.045 ,0.087 ,0.052 ,0.023 ,0.011 ,0.024 ,-0.009 ,-0.049 ,-0.058 ,0.020 ,-0.017 ,0.007 ,-0.012 ,-0.028 ,-0.023 ,-0.040 ,-0.028 ,0.001 ,-0.008 ,0.001 ,0.034 ,0.027 ,0.025 ,0.014 ,0.018 ,0.020 ,0.031 ,0.012 ],
@@ -185,9 +196,6 @@
   onclick: function (d) { selectTime(d.index);}
   };
     
-  $( window ).load(function() {selectTime(0)});
-
-  
   var chartTsl = c3.generate({
     bindto: '#chartTsl',
     data: tsl,
@@ -196,7 +204,10 @@
             label: 'Time (TRs)'
         },
         y: {
-            label: 'Translation (mm)'
+            label: 'Translation (mm)',
+            tick: {
+                format: d3.format('0.2f'),
+            }
         }
     },
     zoom: {
@@ -212,7 +223,10 @@
             label: 'Time (TRs)'
         },
         y: {
-            label: 'Rotation (degrees))'
+            label: 'Rotation (degrees))',
+            tick: {
+                format: d3.format('0.2f')
+            }
         }
     },
     zoom: {
@@ -228,11 +242,17 @@
             label: 'Time (TRs)'
         },
         y: {
-            label: 'Frame displacement (pseudo mm))'
+            label: 'Frame displacement (pseudo mm))',
+            tick: {
+                format: d3.format('0.2f')
+            }
         },
         y2: {
             show: true,
-            label: 'Scrubbing (0: no / 1: yes))'
+            label: 'Scrubbing (0: no / 1: yes))',
+            tick: {
+                format: d3.format('b')
+            }
         }
     },
     zoom: {
@@ -240,28 +260,54 @@
     }
   });
   
-  function selectTime(frame) {
-    var canvas = document.getElementById('sliderNative');
+  function drawMotion(frame,type) {
+    var perc_visu = 0.7;
+    var canvas = document.getElementById("slider" + type);
+    var wImg = $("#slider"+type).parent().width();    
+    if (type==="Native") {
+      var wSpacer = spacerNative.width;
+      var hSpacer = spacerNative.height; }
+    else {
+      var wSpacer = spacerStereo.width;
+      var hSpacer = spacerStereo.height; 
+    };
+    var rSpacer = hSpacer / wSpacer ;
+    var hImg = Math.round(wImg * perc_visu * rSpacer);
+    if (canvas.width!=wImg) {   
+      canvas.width = wImg;
+      canvas.height = hImg;
+    };    
     var ctx = canvas.getContext('2d');
-    var wNative = $("#sliderNative").parent().width();
-    ctx.drawImage(document.getElementById('spriteNative'),
-                frame*192, 0, 192, 64, wNative*0.05, 0, wNative*0.9, 400);
+    ctx.drawImage(document.getElementById("sprite"+type),
+                frame*wSpacer, 0, wSpacer, hSpacer, wImg*(1-perc_visu)/2, 0, wImg*perc_visu, hImg );
     ctx.fillStyle = "#ffffff";
-    ctx.fillText("Frame number "+frame+"/49",wNative*0.07,10);
-    $('#sliderNative').data("numFrame",frame);
+    ctx.fillText("Frame number "+frame+"/49",wImg*0.07,10);
+    numFrame = frame;
+    return hImg
+    };
+    
+  function selectTime(frame) {
+    hImgNative = drawMotion(frame,"Native");
+    if ($("#chartFd").height()!=hImgNative) {
+      $("#chartFd").height(hImgNative);
+      chartFd.resize();
+    };
+    hImgStereo = drawMotion(frame,"Stereo");
+    if ($("#chartTsl").height()!=hImgStereo) {
+      $("#chartTsl").height(hImgStereo);
+      chartTsl.resize();
+    };
     chartTsl.select(['motion_tx' , 'motion_ty' , 'motion_tz'], [frame], true);
     chartRot.select(['motion_rx' , 'motion_ry' , 'motion_rz'], [frame], true);
     chartFd.select(['FD' , 'scrub' ], [frame], true);
     };
     
   function nextTime() {
-    numFrame = $('#sliderNative').data("numFrame");
     nextFrame = numFrame+1;
     if (nextFrame>49){return} else {selectTime(nextFrame)};
     };
 
   function prevTime() {
-    numFrame = $('#sliderNative').data("numFrame");
     prevFrame = numFrame - 1;
     if (prevFrame<0){return} else {selectTime(prevFrame)};
     };
@@ -276,10 +322,17 @@
   };
   
   window.onload = function() {
+    
     document.getElementsByClassName("sliderNext")[0].onclick = function fun() {
       nextTime();
       }
+    document.getElementsByClassName("sliderNext")[1].onclick = function fun() {
+      nextTime();
+      }
     document.getElementsByClassName("sliderPrev")[0].onclick = function fun() {
+      prevTime();
+      }
+    document.getElementsByClassName("sliderPrev")[1].onclick = function fun() {
       prevTime();
       }
     };

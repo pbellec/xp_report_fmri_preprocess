@@ -76,10 +76,56 @@
           </div>
         </div>
       </div>
-      
+    </div>
 <!-- end of three -->
 
+    <div class="row">
+
       <div class="col-sm-6 col-md-4">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Average Frame Displacement (FD) and # time frames / run, before/after scrubbing
+          </div>
+          <div class="chart-stage">
+            <div id="chart-FD" style="width:95%"></div>
+          </div>
+          <div class="chart-notes">
+            Click on a bar to open the motion report. Mouse scroll to zoom.
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-sm-6 col-md-4">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Overlap between individual and group brain mask
+          </div>
+          <div class="chart-stage">
+            <div id="chart-brain" style="width:95%"></div>
+          </div>
+          <div class="chart-notes">
+            Click on a bar to open the motion report. Mouse scroll to zoom.
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-md-4">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Spatial correlation with the individual run of reference
+          </div>
+          <div class="chart-stage">
+            <div id="chart-intra" style="width:95%"></div>
+          </div>
+          <div class="chart-notes">
+            Click on a bar to open the motion report. Mouse scroll to zoom.
+          </div>
+        </div>
+      </div>
+    </div>
+<!-- end of three -->
+    <div class="row">
+      <div class="col-sm-3">
         <div class="chart-wrapper">
           <div class="chart-title">
             Pipeline options
@@ -89,44 +135,16 @@
             </div>
           </div>
           <div class="chart-notes">
-            Click on {...} to expand.
+            Click on {...} to collapse.
           </div>
         </div>
       </div>
-      <div class="col-sm-6 col-md-4">
-        <div class="chart-wrapper">
-                    <div class="chart-title">
-            Input files for subject 
-          </div>
-          <div class="chart-stage">
-          sdfsdfsdf
-          </div>
-          <div class="chart-notes">
-            Click on {...} to expand.
-          </div>
 
-        </div>
-      </div>
-      <div class="col-sm-6 col-md-4">
+      <div class="col-sm-9">
         <div class="chart-wrapper">
                     <div class="chart-title">
             Input files for subject 
-          </div>
-          <div class="chart-stage">
-          sdfsdfsdf
-          </div>
-          <div class="chart-notes">
-            Click on {...} to expand.
-          </div>
-
-        </div>
-      </div>
-<!-- end of three -->
-      <div class="col-sm-6 col-md-4">
-        <div class="chart-wrapper">
-                    <div class="chart-title">
-            Input files for subject 
-            <select class="js-example-basic-single" style="width: 50%">
+            <select class="select-subject" style="width: 50%">
               <option value="Subject1">Subject1</option>
               <option value="Subject2">Subject2</option>
             </select>
@@ -136,17 +154,17 @@
             </div>
           </div>
           <div class="chart-notes">
-            Click on {...} to expand.
+            Click on {...} to collapse.
           </div>
 
         </div>
       </div>
-
+   </div>
     <hr>
 
     <p class="small text-muted">Built with &#9829; by <a href="http://niak.simexp-lab.org">NIAK</a> using dashboards from <a href="https://keen.io">Keen IO</a></p>
 
-  </div>
+  
 
   <!--Dependencies-->
   <script src="assets/d3js/d3.min.js" charset="utf-8"></script>
@@ -159,65 +177,174 @@
   <script type="text/javascript" src="assets/backbone/backbone-min.js"></script>       <!--from pretty-json-->
   <script type="text/javascript" src="assets/pretty-json/pretty-json-min.js"></script> <!--from pretty-json-->
   <script src="assets/select2/select2.min.js"></script> <!--from select 2-->
+  <script src="summary/files_in.js"></script> <!--description of input files and options-->
+  <script src="summary/chartT1.js"></script> <!--data for chartT1-->
+  <script src="summary/chartBOLD.js"></script> <!--data for chartBOLD-->
+  <script src="summary/fd.js"></script> <!--data for chartFD-->
+  <script src="summary/chartBrain.js"></script> <!--data for chartBrain-->
   
   <script>
-  $(document).ready(function() {
-  $(".js-example-basic-single").select2();
-  
-  var chart = c3.generate({		 
-  bindto: '#chart-T1',		
+  // Chart of registration quality (spatial correlation) between the T1 scan and the template
+  var chartT1 = c3.generate({		 
+    bindto: '#chart-T1',		
       data: {		 
-      x: 'Subject',		
-      columns: [	
-          ['Subject','X0010001', 'X0010002'],		 
-          ['corr_target',0.67,0.82]		
-      ],		
+        x: 'Subject',		
+        columns: dataT1,		
+        type: 'bar',		
+        onclick: function (d) { selectSubject(d,chartT1)}		
+      },		
+    axis: {		
+      x: {		
+        type: 'category',		
+        label: 'Subject'
+      },	
+      y: {
+        label: 'spatial correlation',
+        tick: {
+          format: d3.format('0.2f')
+        }
+      }
+    },		
+    zoom: {		
+      enabled: true		
+    },		
+    selection: {		
+      enabled: true		
+    }		
+  });
+    
+  // Chart of registration quality (spatial correlation) between the functional scan and the template
+  var chartBOLD = c3.generate({		
+    bindto: '#chart-BOLD',		
+    data: {
+      x: 'Subject',
+      columns: dataBOLD,		
       type: 'bar',		
-      onclick: function (d) { selectSubject(d,'chart-T1')}		
-  },		
-  axis: {		
+      onclick: function (d) { selectSubject(d,chartBOLD)}		
+    },		
+    axis: {		
       x: {		
-          type: 'category',		
-          }		
+        type: 'category',
+        label: 'Subject'	
       },		
-  zoom: {		
+      y: {
+        label: 'spatial correlation',
+        tick: {
+          format: d3.format('0.2f')
+        }
+      }
+    },		
+    zoom: {		
       enabled: true		
-  },		
-  selection: {		
+    },		
+    selection: {		
       enabled: true		
-  }		
+    }		
   });		
-  $('#chart-T1').data('c3-chart', chart);		
-  		
-  var chart2 = c3.generate({		
-  bindto: '#chart-BOLD',		
-  data: {		
-    columns: [		
-      ['corr_target',0.53,0.62]		
-    ],		
-    type: 'bar',		
-    onclick: function (d) { selectSubject(d,'chart-BOLD')}		
-  },		
-  axis: {		
-      x: {		
-          type: 'category',		
-          categories: ['X0010002', 'X0010001']		
-          }		
-      },		
-  zoom: {		
+
+  // Chart of frame displacement and number of volumes
+  var chartFD = c3.generate({
+    bindto: '#chart-FD',
+    data: {
+      x: 'Run',
+      columns: dataFD,
+      axes: {
+        FD_before: 'y',
+        FD_after: 'y',
+        nb_vol_before: 'y2',        
+        nb_vol_after: 'y2',
+      },
+      type: 'bar',		
+      onclick: function (d) { selectRun(d,chartFD)}		
+    },	
+    axis: {
+        x: {
+          type: 'category',
+          label: 'Run'
+        },
+        y: {
+            label: 'FD',
+            tick: {
+                format: d3.format('0.2f')
+            }
+        },
+        y2: {
+            show: true,
+            label: '#time frames)',
+            tick: {
+                format: d3.format('1.0f')
+            }
+        }
+    },
+    zoom: {
+      enabled: true
+    },
+    selection: {		
       enabled: true		
-  },		
-  selection: {		
+    }	
+  });
+  
+  // Chart of brain mask overlap between individual BOLD data and template
+  var chartBrain = c3.generate({
+    bindto: '#chart-brain',
+    data: {
+      x: 'Run',
+      columns: dataBrain,
+      type: 'bar',		
+      onclick: function (d) { selectRun(d,chartBrain)}		
+    },	
+    axis: {
+        x: {
+          type: 'category',
+          label: 'Run'
+        },
+        y: {
+            label: 'DICE',
+            tick: {
+                format: d3.format('0.2f')
+            }
+        }
+    },
+    zoom: {
+      enabled: true
+    },
+    selection: {		
       enabled: true		
-  }		
-  });		
-  $('#chart-BOLD').data('c3-chart', chart2);		
-  		
-  $(".select-subject").select2();  
- 
-  function selectSubject (d,type) {		 
-    charti = $('#' + type).data('c3-chart');		
-    subject = charti.internal.config.axis_x_categories[d.x];		
+    }	
+  });
+  
+  // Chart of spatial correlation of individual BOLD data and template
+  var chartIntra = c3.generate({
+    bindto: '#chart-intra',
+    data: {
+      x: 'Run',
+      columns: dataIntra,
+      type: 'bar',		
+      onclick: function (d) { selectRun(d,chartIntra)}		
+    },	
+    axis: {
+        x: {
+          type: 'category',
+          label: 'Run'
+        },
+        y: {
+            label: 'spatial correlation',
+            tick: {
+                format: d3.format('0.2f')
+            }
+        }
+    },
+    zoom: {
+      enabled: true
+    },
+    selection: {		
+      enabled: true		
+    }	
+  });
+  
+  // Create links to registration report attached to the bars in chartT1 and chartBOLD
+  function selectSubject (d,chart) {		 
+    subject = chart.internal.config.axis_x_categories[d.x];		
     var win = window.open(['registration.html?id=' + subject], '_blank');
     if (win) {
       //Browser has allowed it to be opened
@@ -227,122 +354,41 @@
       alert('Please allow popups for this website'); 
     }
   }
-  });
-    
-  var $eventSelect = $(".js-example-basic-single");
-  
-  $eventSelect.on("select2:select", function (e) { info(e); })
-  
-  function info (evt) {
-    switch(evt.params.data.id) {
-        case "Subject1":
-            var filesIn = {
-		"anat": "\/home\/pbellec\/demo_niak\/anat_subject1.mnc.gz",
-		"fmri": {
-			"session1": {
-				"motor": "\/home\/pbellec\/demo_niak\/func_motor_subject1.mnc.gz",
-				"rest": "\/home\/pbellec\/demo_niak\/func_rest_subject1.mnc.gz"
-			}
-		}
-            };
-            break;
-        case "Subject2":
-            var filesIn = {
-		"anat": "\/home\/pbellec\/demo_niak\/anat_subject2.mnc.gz",
-		"fmri": {
-			"session1": {
-				"motor": "\/home\/pbellec\/demo_niak\/func_motor_subject2.mnc.gz",
-				"rest": "\/home\/pbellec\/demo_niak\/func_rest_subject2.mnc.gz"
-			}
-		}
-	};
-	break;
-    };
-  
-    var node2 = new PrettyJSON.view.Node({
-      el:$('#elem2'),
-      data: filesIn,
-    });
-    node2.expandAll();
-  }  
-  
-  var evt = {params:{data:{id:"Subject1"}}};
-  info (evt);
-  
-  var opt = {
-	"folder_out": "\/home\/pbellec\/demo_niak\/fmri_preprocess\/",
-	"size_output": "quality_control",
-	"slice_timing": {
-		"type_acquisition": "interleaved ascending",
-		"type_scanner": "Bruker",
-		"delay_in_tr": 0,
-		"suppress_vol": 0,
-		"flag_nu_correct": 1,
-		"arg_nu_correct": "-distance 200",
-		"flag_center": 0,
-		"flag_skip": 0
-	},
-	"motion": {
-		"session_ref": "session1"
-	},
-	"resample_vol": {
-		"interpolation": "trilinear",
-		"voxel_size": [3,3,3]
-	},
-	"t1_preprocess": {
-		"nu_correct": {
-			"arg": "-distance 75"
-		}
-	},
-	"time_filter": {
-		"hp": 0.01,
-		"lp": "_Inf_"
-	},
-	"regress_confounds": {
-		"flag_wm": 1,
-		"flag_vent": 1,
-		"flag_motion_params": 1,
-		"flag_gsc": 0,
-		"flag_scrubbing": 1,
-		"thre_fd": 0.5
-	},
-	"corsica": {
-		"sica": {
-			"nb_comp": 60
-		},
-		"threshold": 0.15,
-		"flag_skip": 1
-	},
-	"smooth_vol": {
-		"fwhm": 6,
-		"flag_skip": 0
-	},
-	"tune": [
-		{
-			"subject": "subject1",
-			"param": {
-				"slice_timing": {
-					"flag_center": 1
-				}
-			}
-		},
-		{
-			"subject": "subject2",
-			"param": {
-				"slice_timing": {
-					"flag_center": 0
-				}
-			}
-		}
-	]
+
+  // Create links to motion report attached to the bars in chartMotion chartBrain and chartIntra
+  function selectRun (d,chart) {		 
+    run = chart.internal.config.axis_x_categories[d.x];		
+    var win = window.open(['motion_'+run+'.html'], '_blank');
+    if (win) {
+      //Browser has allowed it to be opened
+      win.focus();
+    } else {
+      //Browser has blocked it
+      alert('Please allow popups for this website'); 
     }
-
-var node = new PrettyJSON.view.Node({
-  el:$('#elem'),
-  data: opt
-});
-node.collapseAll()
-
+  }
+  
+  // Create button to select subjects
+  $(".select-subject").select2();  
+  $(".select-subject").on("select2:select", function (e) { buildFilesIn(e); })
+    
+  // Create the json description of input files  
+  var evt = {params:{data:{id:"Subject1"}}};
+  buildFilesIn (evt);
+  
+  // Create the json description of pipeline options
+  var node = new PrettyJSON.view.Node({
+    el:$('#elem'),
+    data: opt
+  });
+  node.expandAll()
+  
+  $(document).ready(function() {
+    // Attach the chart on T1 registration to the figure
+    $('#chart-T1').data('c3-chart', chartT1);		  		
+    // Attach the chart on BOLD registration to the figure
+    $('#chart-BOLD').data('c3-chart', chartBOLD);			
+  });
 </script>
 
 </body>

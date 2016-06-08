@@ -37,6 +37,7 @@
   <div class="container-fluid">
            
 <!-- FD plots -->
+    <div class="row">
       <div class="col-sm-3">
         <div class="chart-wrapper">
           <div class="chart-title">
@@ -69,9 +70,11 @@
           </div>
         </div>
       </div>
+    </div>
 <!-- end of two -->
       
 <!-- Translation plots -->
+  <div class="row">
     <div class="row">
       <div class="col-sm-3">
         <div class="chart-wrapper">
@@ -104,10 +107,11 @@
           </div>
         </div>
       </div>
-      
+    </div>    
 <!-- end of two -->
  
 <!-- Rotation plots -->      
+    <div class="row">
       <div class="col-sm-3">
         <div class="chart-wrapper">
           <div class="chart-title">
@@ -140,7 +144,7 @@
       </div>
 <!-- end of two -->
     </div>
-
+  </div>
 
 
     <hr>
@@ -157,18 +161,23 @@
   <script type="text/javascript" src="assets/keen/keen.min.js"></script>           <!--from keen.io-->
   <script src="assets/select2/select2.min.js"></script> <!--from select 2-->
   <script src="motion/dataMotion.js"></script> <!--Motion (and FD) parameters-->
+  <script src="motion/dataRun.js"></script> <!--List of available runs-->
   
   <script> 
-  var numFrame = 0;
-  var percVisu = 0.7;
-  var dataRun = [{id: 0, text: "Select a session"}, { id: 1, text: 'X0010001_session1_run1' }, { id: 2, text: 'X0010001_session1_run2' }];
+  
+  // Constants
+  var numFrame = 0; // Initially display the first time frame
+  var percVisu = 0.7; // The BOLD montage use 70% of the window
+  var percVisuStr = 100*percVisu;
+  percVisuStr = percVisuStr.toString()+"%";
+  
+  // Load spacer images, to set the size of a montage in each mosaic  
   var spacerNative = new Image();
   spacerNative.src = "motion/spacer.png";
   var spacerStereo = new Image();
   spacerStereo.src = "motion/spacer_stereo.png";
-  var percVisuStr = 100*percVisu;
-  percVisuStr = percVisuStr.toString()+"%";
-    
+  
+  // Create a button to select a new session
   var $eventSelect = $("#select-BOLD");
   $eventSelect.select2({
     placeholder: "Select a new session",
@@ -180,23 +189,9 @@
       subject = $("#select-BOLD option[value=" + id + "]").text();
       location.assign(['registration.html?id=' + subject]);
     }
-  })
-  
-  $( window ).load(function() {
-    selectTime(numFrame);
-    $("#registration").width(percVisuStr);
-    figRegistration = $("#divRegistration");
-    figRegistration.css("backgroundImage","url('motion/median_volume.jpg')");
-    figRegistration.css("backgroundSize",percVisuStr);
-    figRegistration.css("backgroundPosition","center");
-    figRegistration.css("backgroundRepeat","no-repeat");
-    chartRot.resize({height:$("#registration").height()});
   });
-  window.addEventListener("resize", function() {
-    selectTime(numFrame); 
-    chartRot.resize({height:$("#registration").height()});
-    }); 
-      
+  
+  // c3.js data for the translation parameters chart
   var chartTsl = c3.generate({
     bindto: '#chartTsl',
     data: tsl,
@@ -216,6 +211,7 @@
     },
   });
   
+  // c3.js data for the rotation parameters chart
   var chartRot = c3.generate({
     bindto: '#chartRot',
     data: rot,
@@ -235,6 +231,7 @@
     }
   });
   
+  // c3.js data for the FD chart
   var chartFd = c3.generate({
     bindto: '#chartFd',
     data: fd,
@@ -261,31 +258,36 @@
     }
   });
   
+  // function to draw volumes for a particular time frame. 
+  // Update canvas based on two big mosaic files
+  // native: images in native space, prior to motion correction
+  // stereo: images in stereostaxic space, after motion correction
   function drawMotion(frame,type) {
     var canvas = document.getElementById("slider" + type);
     var wImg = $("#slider"+type).parent().width();    
-    if (type==="Native") {
-      var wSpacer = spacerNative.width;
-      var hSpacer = spacerNative.height; }
-    else {
-      var wSpacer = spacerStereo.width;
-      var hSpacer = spacerStereo.height; 
-    };
-    var rSpacer = hSpacer / wSpacer ;
+    var wSpacer = {Native:spacerNative.width , Stereo:spacerStereo.width};
+    var hSpacer = {Native:spacerNative.height , Stereo:spacerStereo.height};    
+    var nbTimeFrames = (document.getElementById("spriteNative").width/wSpacer.Native)-1; 
+    var rSpacer = hSpacer[type] / wSpacer[type] ;
     var hImg = Math.round(wImg * percVisu * rSpacer);
+    // Get number of time frames
     if (canvas.width!=wImg) {   
       canvas.width = wImg;
       canvas.height = hImg;
     };    
     var ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(document.getElementById("sprite"+type),
-                frame*wSpacer, 0, wSpacer, hSpacer, wImg*(1-percVisu)/2, 0, wImg*percVisu, hImg );
+                frame*wSpacer[type], 0, wSpacer[type], hSpacer[type], wImg*(1-percVisu)/2, 0, wImg*percVisu, hImg );
     ctx.fillStyle = "#ffffff";
-    ctx.fillText("Frame number "+frame+"/49",wImg*1.2*(1-percVisu)/2,0.05*hImg);
+    ctx.fillText("Frame number "+frame+"/"+nbTimeFrames,wImg*1.2*(1-percVisu)/2,0.05*hImg);
     numFrame = frame;
     return hImg
-    };
+  };
     
+  // function to select a time frame. It calls the drawing of canvas, 
+  // select the correct time point in the graphs, and also resize 
+  // the translation and rotation graphs based on the corresponding movies. 
   function selectTime(frame) {
     hImgNative = drawMotion(frame,"Native");
     if ($("#chartFd").height()!=hImgNative) {
@@ -298,47 +300,59 @@
     chartTsl.select(['motion_tx' , 'motion_ty' , 'motion_tz'], [frame], true);
     chartRot.select(['motion_rx' , 'motion_ry' , 'motion_rz'], [frame], true);
     chartFd.select(['FD' , 'scrub' ], [frame], true);
-    };
+  };
     
+  // function to move forward by one time sample
   function nextTime() {
     nextFrame = numFrame+1;
-    if (nextFrame>49){return} else {selectTime(nextFrame)};
+    // Get number of time frames
+    var nbTimeFrames = (document.getElementById("spriteNative").width/spacerNative.width)-1; 
+    if (nextFrame>nbTimeFrames){return} else {selectTime(nextFrame)};
     };
 
+  // Function to move back by one time sample
   function prevTime() {
     prevFrame = numFrame - 1;
     if (prevFrame<0){return} else {selectTime(prevFrame)};
     };
 
-  function reactKey(key){
-    if (key==39) {
-      nextTime()
-    } 
-    else if (key==37) {
-      prevTime() 
-    };
+  // associate the arrows of the slider with backward/forward time shifts
+  window.onload = function() {  
+    document.getElementsByClassName("sliderNext")[0].onclick = function fun() { nextTime();};
+    document.getElementsByClassName("sliderNext")[1].onclick = function fun() { nextTime();};
+    document.getElementsByClassName("sliderPrev")[0].onclick = function fun() {prevTime();};
+    document.getElementsByClassName("sliderPrev")[1].onclick = function fun() {prevTime();};
   };
   
-  window.onload = function() {
-    
-    document.getElementsByClassName("sliderNext")[0].onclick = function fun() {
-      nextTime();
-      }
-    document.getElementsByClassName("sliderNext")[1].onclick = function fun() {
-      nextTime();
-      }
-    document.getElementsByClassName("sliderPrev")[0].onclick = function fun() {
-      prevTime();
-      }
-    document.getElementsByClassName("sliderPrev")[1].onclick = function fun() {
-      prevTime();
-      }
-    };
-    
-  window.onkeydown = function(e) { reactKey(e.keyCode) 
-      };
+  // Add key bindings, left/right arrow to move backward/forward in time  
+  function reactKey(key){
+    if (key==39) { nextTime() } 
+    else if (key==37) {prevTime()};
+  };
+  window.onkeydown = function(e) { reactKey(e.keyCode) };
+   
+  // On load: build all figures   
+  $( window ).load(function() {
+    // Trigger the building of motion movies   
+    selectTime(numFrame);
+    // set the size of the registration figure in tune with motion movies
+    $("#registration").width(percVisuStr);
+    // Add background image with correct size in the registration figure
+    figRegistration = $("#divRegistration");
+    figRegistration.css("backgroundImage","url('motion/median_volume.jpg')");
+    figRegistration.css("backgroundSize",percVisuStr);
+    figRegistration.css("backgroundPosition","center");
+    figRegistration.css("backgroundRepeat","no-repeat");
+    // Resize the rotation chart, which is not tweaked by selectTime (unlike the FD and translation charts)
+    chartRot.resize({height:$("#registration").height()});
 
-
+    // On window resizing, trigger a re-size of all graphs
+    window.addEventListener("resize", function() {
+      selectTime(numFrame); 
+      chartRot.resize({height:$("#registration").height()});
+    });
+  });
+  
   </script>
  
 </body>
